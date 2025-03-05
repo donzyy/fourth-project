@@ -1,81 +1,135 @@
-import React from 'react';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-fade";
+import "swiper/css/navigation";
+import { FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
+
+const HeroSlide = [
+  {
+    img: "/Media/TestImage.jpg",
+    subtitle: "Military Excellence",
+    title: "Tactical Gear",
+    description: "Equip your forces with the best in class tactical equipment",
+  },
+  {
+    img: "/Media/TestImage4.jpg",
+    subtitle: "Advanced Technology",
+    title: "Combat Ready",
+    description: "State-of-the-art combat gear for modern warfare",
+  },
+  {
+    img: "/Media/TestImage5.jpg",
+    subtitle: "Precision Engineering",
+    title: "Elite Forces",
+    description: "Specially designed equipment for elite military units",
+  },
+];
 
 const HeroLanding3 = () => {
-  const HeroSlide = [
-    {
-      img: '/Media/TestImage.jpg', // Adjusted path
-      subtitle: 'Beats Solo',
-      title: 'Wireless',
-      /* title2: 'HalfShoe', */
-    },
-    {
-      img: '/Media/TestImage4.jpg',
-      subtitle: 'Beats Solo',
-      title: 'Wireless',
-      /* title2: 'Handsome', */
-    },
-    {
-      img: '/Media/TestImage5.jpg',
-      subtitle: 'Beats Solo',
-      title: 'Branded',
-      /* title2: 'HeadPhone', */
-    },
-  ];
-
-  // Updated slider settings
-  const sliderSettings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1, // Show 1 slide at a time for a hero section
-    slidesToScroll: 1,
-    arrows: false,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    pauseOnHover: false,
-    pauseOnFocus: true,
-  };
-
+  const [activeIndex, setActiveIndex] = useState(0);
   return (
-    <div className="mx-auto px-5 lg:px-10 my-6 max-w-full w-full">
-      <div className="overflow-hidden rounded-3xl min-h-[550px] sm:min-h-[650px] hero-bg-color flex justify-center items-center">
-        <div className="container pb-8 sm:pb-0">
-          <Slider {...sliderSettings}>
-            {HeroSlide.map((item, index) => (
-              <div key={index}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 px-5">
-                  <div className="flex flex-col justify-center gap-4 sm:pl-3 pt-12 sm:pt-0 text-center sm:text-left order-2 sm:order-1 relative z-10">
-                    <h1 className="text-2xl sm:text-6xl lg:text-2xl font-bold">{item.subtitle}</h1>
-                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold">{item.title}</h1>
-                    <h1 className="text-5xl uppercase text-black sm:text-[80px] md:text-[100px] xl:text-[150px] font-bold">
-                      {item.title2}
-                    </h1>
-                    <div>
-                      <button className="cursor-pointer hover:scale-105 duration-300 py-2 px-8 rounded-full relative z-10 text-white bg-[#fb8602]">
-                        View All Products
-                      </button>
-                    </div>
-                  </div>
-                  <div className="order-1 sm:order-2">
-                    <img
-                      className="w-[300px] h-[300px] sm:h-[450px] sm:w-[450px] sm:scale-105 lg:scale-120 object-contain mx-auto  relative z-40"
-                      src={item.img}
-                      alt={`${item.title2} image`}
-                    /> {/* I've removed this dropshadow from the classname place it back as and when it's relevant. drop-shadow-[-8px_4px_6px_rgba(0,0,0,.4)] */}
-                  </div>
+    <div className="w-full bg-gray-100">
+      <Swiper
+        modules={[Autoplay, EffectFade, Navigation]}
+        effect="fade"
+        speed={1000}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+        }}
+        navigation
+        loop
+        className="h-[calc(70vh-80px)] min-h-[500px]"
+        onSlideChange={(swiper) => {
+          setActiveIndex(swiper.realIndex);
+        }}
+        onInit={(swiper) => {
+          setActiveIndex(swiper.realIndex);
+        }}
+      >
+        {HeroSlide.map((slide, index) => (
+          <SwiperSlide key={index} className="relative">
+            <div className="absolute inset-0 bg-black/40 z-10" />
+            <motion.img
+              src={slide.img}
+              alt={slide.title}
+              className="absolute right-0 top-0 h-full object-cover"
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 10, ease: "easeOut" }}
+            />
+            <div className="relative z-20 h-full flex items-center">
+              <div className="container mx-auto px-6 sm:px-6 lg:px-12">
+                <div className="max-w-3xl">
+                  <motion.h2
+                    className="text-xl sm:text-2xl text-white font-semibold mb-2"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={
+                      activeIndex === index
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 20 }
+                    }
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ delay: 0.2, duration: 0.8 }}
+                  >
+                    {slide.subtitle}
+                  </motion.h2>
+                  <motion.h1
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-bold mb-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={
+                      activeIndex === index
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 20 }
+                    }
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ delay: 0.4, duration: 0.8 }}
+                  >
+                    {slide.title}
+                  </motion.h1>
+                  <motion.p
+                    className="text-lg sm:text-xl text-gray-200 mb-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={
+                      activeIndex === index
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 20 }
+                    }
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                  >
+                    {slide.description}
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={
+                      activeIndex === index
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 20 }
+                    }
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ delay: 0.8, duration: 0.8 }}
+                  >
+                    <Link
+                      to="/products"
+                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition duration-150 ease-in-out"
+                    >
+                      Explore Products
+                      <FaArrowRight className="ml-2" />
+                    </Link>
+                  </motion.div>
                 </div>
               </div>
-            ))}
-          </Slider>
-        </div>
-      </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </div>
   );
 };
 
 export default HeroLanding3;
-
-// Tailwind CSS (unchanged)
