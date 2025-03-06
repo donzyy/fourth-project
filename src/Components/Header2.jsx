@@ -13,7 +13,13 @@ import {
   BsYoutube,
   BsGlobe,
 } from "react-icons/bs";
-import { Popover, Transition } from "@headlessui/react";
+import {
+  Popover,
+  Transition,
+  TransitionChild,
+  PopoverButton,
+  PopoverPanel,
+} from "@headlessui/react";
 import MegaMenu from "./MegaMenu";
 
 function Header() {
@@ -181,7 +187,7 @@ function Header() {
             <Popover className="relative">
               {({ open }) => (
                 <>
-                  <Popover.Button className="flex items-center text-sm text-gray-600 hover:text-indigo-600 focus:outline-none">
+                  <PopoverButton className="flex items-center text-sm text-gray-600 hover:text-indigo-600 focus:outline-none">
                     <BsGlobe className="mr-1 h-4 w-4" />
                     <span>Language</span>
                     <BsChevronDown
@@ -189,7 +195,7 @@ function Header() {
                         open ? "rotate-180" : ""
                       }`}
                     />
-                  </Popover.Button>
+                  </PopoverButton>
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-200"
@@ -199,7 +205,7 @@ function Header() {
                     leaveFrom="opacity-100 translate-y-0"
                     leaveTo="opacity-0 translate-y-1"
                   >
-                    <Popover.Panel className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <PopoverPanel className="absolute z-[101] left-0 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <div className="py-1 max-h-96 overflow-y-auto">
                         {languages.map((language) => (
                           <a
@@ -212,7 +218,7 @@ function Header() {
                           </a>
                         ))}
                       </div>
-                    </Popover.Panel>
+                    </PopoverPanel>
                   </Transition>
                 </>
               )}
@@ -296,7 +302,7 @@ function Header() {
                   <Popover key={page.name} className="relative">
                     {({ open }) => (
                       <>
-                        <Popover.Button
+                        <PopoverButton
                           className={`flex items-center text-base font-medium focus:outline-none ${
                             open
                               ? "text-indigo-600"
@@ -309,7 +315,7 @@ function Header() {
                               open ? "rotate-180" : ""
                             }`}
                           />
-                        </Popover.Button>
+                        </PopoverButton>
 
                         <Transition
                           as={Fragment}
@@ -320,7 +326,7 @@ function Header() {
                           leaveFrom="opacity-100 translate-y-0"
                           leaveTo="opacity-0 translate-y-1"
                         >
-                          <Popover.Panel className="absolute left-0 z-10 mt-3 w-screen max-w-xs transform px-2 sm:px-0">
+                          <PopoverPanel className="absolute left-0 z-10 mt-3 w-screen max-w-xs transform px-2 sm:px-0">
                             <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                               <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
                                 {page.submenu.map((item) => (
@@ -338,7 +344,7 @@ function Header() {
                                 ))}
                               </div>
                             </div>
-                          </Popover.Panel>
+                          </PopoverPanel>
                         </Transition>
                       </>
                     )}
@@ -440,7 +446,7 @@ function Header() {
       <Transition show={open} as={Fragment}>
         <div className="relative z-50 lg:hidden">
           {/* Background overlay */}
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
             enterFrom="opacity-0"
@@ -453,10 +459,10 @@ function Header() {
               className="fixed inset-0 bg-black bg-opacity-25"
               onClick={() => setOpen(false)}
             />
-          </Transition.Child>
+          </TransitionChild>
 
           {/* Sliding menu panel */}
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="transition ease-in-out duration-300 transform"
             enterFrom="-translate-x-full"
@@ -632,7 +638,7 @@ function Header() {
                 </div>
               </div>
             </div>
-          </Transition.Child>
+          </TransitionChild>
         </div>
       </Transition>
     </>
