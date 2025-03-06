@@ -1,36 +1,29 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   BsChevronDown,
   BsJustify,
   BsX,
   BsSearch,
-  BsArrowRight,
   BsTelephone,
   BsEnvelope,
-  BsGeoAlt,
+  BsFacebook,
+  BsLinkedin,
+  BsYoutube,
+  BsGlobe,
 } from "react-icons/bs";
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-} from "@headlessui/react";
+import { Popover, Transition } from "@headlessui/react";
+import MegaMenu from "./MegaMenu";
 
 function Header() {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeMobileSubmenu, setActiveMobileSubmenu] = useState(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-
     const handleScroll = () => {
       const offset = window.scrollY;
       if (offset > 10) {
@@ -63,6 +56,8 @@ function Header() {
         "Frog Suit",
         "Military Jacket",
       ],
+      image:
+        "https://www.corhunter-garment.com/uploads/202337095/small/acu-military-uniform7366b4a7-b5f9-4a14-bc6d-3b09569c915d.jpg",
     },
     {
       id: 2,
@@ -73,6 +68,8 @@ function Header() {
         "Military Tactical Pants",
         "Camouflage Clothing",
       ],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n20240912162130eb636.jpg",
     },
     {
       id: 3,
@@ -82,26 +79,36 @@ function Header() {
         "Security Tactical jacket",
         "Reflective Clothing",
       ],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n20240912150107ba023.jpg",
     },
     {
       id: 4,
       name: "Military Beret & Cap & Hat",
       subcategories: ["Beret", "Cap", "Hat"],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n202409121505265e3c2.jpg",
     },
     {
       id: 5,
       name: "Military Bags",
       subcategories: ["Backpack"],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n20240912152719f4274.jpg",
     },
     {
       id: 6,
       name: "Tactical Boots",
       subcategories: [],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n20240912152837f463f.jpg",
     },
     {
       id: 7,
       name: "Bulletproof Equipment",
       subcategories: ["Bulletproof Helmet", "Bulletproof Vest"],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n2024091215344761747.jpg",
     },
     {
       id: 8,
@@ -112,6 +119,8 @@ function Header() {
         "Tactical Belt",
         "Protective Gear Kneepad",
       ],
+      image:
+        "https://www.corhunter-garment.com/uploads/37095/list/n20240912162647415c8.jpg",
     },
   ];
 
@@ -130,6 +139,13 @@ function Header() {
         "https://www.corhunter-garment.com/uploads/202237095/small/frog-suit-g2-military-dress-uniforms21056765128.jpg",
       imageAlt: "Frog Suit G2 Military Dress Uniforms",
     },
+    {
+      name: "Tactical Boots",
+      href: "/products/tactical-boots",
+      imageSrc:
+        "https://www.corhunter-garment.com/uploads/37095/list/n20240912162647415c8.jpg",
+      imageAlt: "Tactical Boots",
+    },
   ];
 
   const navigation = {
@@ -140,214 +156,212 @@ function Header() {
     ],
   };
 
+  const languages = [
+    { code: "en", name: "English", flag: "🇺🇸" },
+    { code: "ar", name: "عربي", flag: "🇦🇪" },
+    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "ko", name: "한국어", flag: "🇰🇷" },
+    { code: "tr", name: "Türkçe", flag: "🇹🇷" },
+    { code: "it", name: "Italiano", flag: "🇮🇹" },
+    { code: "pt", name: "Português", flag: "🇵🇹" },
+    { code: "ja", name: "日本語", flag: "🇯🇵" },
+    { code: "vn", name: "Việt Nam", flag: "🇻🇳" },
+    { code: "ru", name: "русский", flag: "🇷🇺" },
+    { code: "fr", name: "Français", flag: "🇫🇷" },
+    { code: "es", name: "Español", flag: "🇪🇸" },
+  ];
+
   return (
-    <section
-      className={`sticky top-0 z-[100] w-full transition-all duration-300 ${
-        scrolled ? "bg-white shadow-md" : "bg-white"
-      }`}
-    >
-      <div className="border-b border-gray-100 w-full z-100">
-        <div className="container px-4 mx-auto">
+    <>
+      {/* Top Bar */}
+      <div className="bg-gray-50 border-b border-gray-200 hidden md:block">
+        <div className="container mx-auto px-4 py-2">
+          <div className="flex justify-between items-center">
+            {/* Language Selector */}
+            <Popover className="relative">
+              {({ open }) => (
+                <>
+                  <Popover.Button className="flex items-center text-sm text-gray-600 hover:text-indigo-600 focus:outline-none">
+                    <BsGlobe className="mr-1 h-4 w-4" />
+                    <span>Language</span>
+                    <BsChevronDown
+                      className={`ml-1 h-3 w-3 transition-transform ${
+                        open ? "rotate-180" : ""
+                      }`}
+                    />
+                  </Popover.Button>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 translate-y-1"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-1"
+                  >
+                    <Popover.Panel className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="py-1 max-h-96 overflow-y-auto">
+                        {languages.map((language) => (
+                          <a
+                            key={language.code}
+                            href={`#${language.code}`}
+                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <span className="mr-2">{language.flag}</span>
+                            {language.name}
+                          </a>
+                        ))}
+                      </div>
+                    </Popover.Panel>
+                  </Transition>
+                </>
+              )}
+            </Popover>
+
+            {/* Contact Info */}
+            <div className="flex items-center space-x-6">
+              <a
+                href="tel:+8613377883692"
+                className="text-sm text-gray-600 hover:text-indigo-600 flex items-center"
+              >
+                <BsTelephone className="mr-1 h-3 w-3" />
+                <span>+8613377883692</span>
+              </a>
+              <a
+                href="mailto:sara@whvison.cn"
+                className="text-sm text-gray-600 hover:text-indigo-600 flex items-center"
+              >
+                <BsEnvelope className="mr-1 h-3 w-3" />
+                <span>sara@whvison.cn</span>
+              </a>
+              <div className="flex items-center space-x-3">
+                <a
+                  href="https://www.facebook.com/corhuntertacticalgear/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:text-indigo-600 transition-colors"
+                >
+                  <BsFacebook size={16} />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/corhuntergarment/about/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:text-indigo-600 transition-colors"
+                >
+                  <BsLinkedin size={16} />
+                </a>
+                <a
+                  href="https://www.youtube.com/@corhuntermilitaryuniformst2062/featured"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-500 hover:text-indigo-600 transition-colors"
+                >
+                  <BsYoutube size={16} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header */}
+      <header
+        className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+          scrolled ? "bg-white shadow-md" : "bg-white"
+        }`}
+      >
+        <div className="container mx-auto px-4 relative">
           <div className="flex items-center justify-between py-4">
-            <Link to={"/"}>
+            {/* Logo */}
+            <Link to="/" className="flex-shrink-0">
               <img
-                className="h-12"
+                className="h-12 w-auto"
                 src="/Media/Taurean IT Logo1_vectorized.png"
                 alt="Corhunter Garment"
               />
             </Link>
-            <ul className="hidden lg:flex items-center gap-8 relative">
-              {navigation.pages.map((page) => (
-                <li
-                  key={page.name}
-                  className="hover:text-indigo-600 transition duration-200"
-                >
-                  <Link to={page.href}>{page.name}</Link>
-                </li>
-              ))}
-              <li>
-                <Popover className="relative">
-                  <PopoverButton className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition duration-200">
-                    <span>Products</span>
-                    <BsChevronDown size={16} />
-                  </PopoverButton>
 
-                  <PopoverPanel className="fixed inset-0 top-16 z-100 text-sm text-gray-500 rounded-sm bg-white mt-4 mx-2 shadow-lg">
-                    <div className="mx-auto max-w-screen-xl px-4 py-8">
-                      <div className="grid grid-cols-4 gap-8">
-                        {/* Categories (2 columns) */}
-                        <div className="col-span-2 grid grid-cols-2 gap-8">
-                          <div>
-                            <p className="font-medium text-gray-900 text-xl mb-4 pb-2 border-b">
-                              Product Categories
-                            </p>
-                            <ul className="mt-4 space-y-3">
-                              {categories.slice(0, 4).map((category) => (
-                                <li key={category.id} className="group">
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
+              <Link
+                to="/"
+                className="text-base font-medium text-gray-700 hover:text-indigo-600"
+              >
+                Home
+              </Link>
+
+              {navigation.pages.slice(1).map((page) =>
+                page.hasSubmenu ? (
+                  <Popover key={page.name} className="relative">
+                    {({ open }) => (
+                      <>
+                        <Popover.Button
+                          className={`flex items-center text-base font-medium focus:outline-none ${
+                            open
+                              ? "text-indigo-600"
+                              : "text-gray-700 hover:text-indigo-600"
+                          }`}
+                        >
+                          <span>{page.name}</span>
+                          <BsChevronDown
+                            className={`ml-1 h-4 w-4 transition-transform ${
+                              open ? "rotate-180" : ""
+                            }`}
+                          />
+                        </Popover.Button>
+
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-200"
+                          enterFrom="opacity-0 translate-y-1"
+                          enterTo="opacity-100 translate-y-0"
+                          leave="transition ease-in duration-150"
+                          leaveFrom="opacity-100 translate-y-0"
+                          leaveTo="opacity-0 translate-y-1"
+                        >
+                          <Popover.Panel className="absolute left-0 z-10 mt-3 w-screen max-w-xs transform px-2 sm:px-0">
+                            <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                              <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                                {page.submenu.map((item) => (
                                   <Link
-                                    to={`/products?category=${encodeURIComponent(
-                                      category.name
-                                    )}`}
-                                    className="hover:text-indigo-600 transition duration-200 font-medium"
+                                    key={item.name}
+                                    to={item.href}
+                                    className="-m-3 flex items-start rounded-lg p-3 hover:bg-gray-50"
                                   >
-                                    {category.name}
+                                    <div className="ml-4">
+                                      <p className="text-base font-medium text-gray-900">
+                                        {item.name}
+                                      </p>
+                                    </div>
                                   </Link>
-                                  {category.subcategories.length > 0 && (
-                                    <ul className="ml-4 mt-2 space-y-1">
-                                      {category.subcategories.map(
-                                        (subcategory, index) => (
-                                          <li key={index}>
-                                            <Link
-                                              to={`/products?category=${encodeURIComponent(
-                                                category.name
-                                              )}&subcategory=${encodeURIComponent(
-                                                subcategory
-                                              )}`}
-                                              className="text-gray-500 hover:text-indigo-600 transition duration-200 text-sm"
-                                            >
-                                              {subcategory}
-                                            </Link>
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900 text-xl mb-4 pb-2 border-b">
-                              More Categories
-                            </p>
-                            <ul className="mt-4 space-y-3">
-                              {categories.slice(4).map((category) => (
-                                <li key={category.id} className="group">
-                                  <Link
-                                    to={`/products?category=${encodeURIComponent(
-                                      category.name
-                                    )}`}
-                                    className="hover:text-indigo-600 transition duration-200 font-medium"
-                                  >
-                                    {category.name}
-                                  </Link>
-                                  {category.subcategories.length > 0 && (
-                                    <ul className="ml-4 mt-2 space-y-1">
-                                      {category.subcategories.map(
-                                        (subcategory, index) => (
-                                          <li key={index}>
-                                            <Link
-                                              to={`/products?category=${encodeURIComponent(
-                                                category.name
-                                              )}&subcategory=${encodeURIComponent(
-                                                subcategory
-                                              )}`}
-                                              className="text-gray-500 hover:text-indigo-600 transition duration-200 text-sm"
-                                            >
-                                              {subcategory}
-                                            </Link>
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-
-                        {/* Featured Products */}
-                        <div className="col-span-1">
-                          <p className="font-medium text-gray-900 text-xl mb-4 pb-2 border-b">
-                            Featured Products
-                          </p>
-                          <div className="space-y-4 mt-4">
-                            {featuredProducts.map((product) => (
-                              <Link
-                                key={product.name}
-                                to={product.href}
-                                className="group flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg transition duration-150"
-                              >
-                                <div className="flex-shrink-0 h-16 w-16 overflow-hidden rounded-md border border-gray-200">
-                                  <img
-                                    src={product.imageSrc || "/placeholder.svg"}
-                                    alt={product.imageAlt}
-                                    className="h-full w-full object-cover object-center group-hover:opacity-75"
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-900 truncate group-hover:text-indigo-600">
-                                    {product.name}
-                                  </p>
-                                </div>
-                              </Link>
-                            ))}
-                            <Link
-                              to="/products"
-                              className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition-colors mt-2"
-                            >
-                              <span>View all products</span>
-                              <BsArrowRight className="ml-1 h-4 w-4" />
-                            </Link>
-                          </div>
-                        </div>
-
-                        {/* Contact Information */}
-                        <div className="col-span-1">
-                          <p className="font-medium text-gray-900 text-xl mb-4 pb-2 border-b">
-                            Contact Us
-                          </p>
-                          <div className="space-y-3 mt-4">
-                            <div className="flex items-start space-x-3">
-                              <BsTelephone className="h-5 w-5 text-indigo-600 mt-0.5" />
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">
-                                  Phone
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  +8613377883692
-                                </p>
+                                ))}
                               </div>
                             </div>
-                            <div className="flex items-start space-x-3">
-                              <BsEnvelope className="h-5 w-5 text-indigo-600 mt-0.5" />
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">
-                                  Email
-                                </p>
-                                <a
-                                  href="mailto:sara@whvison.cn"
-                                  className="text-sm text-indigo-600 hover:text-indigo-800"
-                                >
-                                  sara@whvison.cn
-                                </a>
-                              </div>
-                            </div>
-                            <div className="flex items-start space-x-3">
-                              <BsGeoAlt className="h-5 w-5 text-indigo-600 mt-0.5" />
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">
-                                  Address
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  Room A404, Building 2, Huifeng Corporate
-                                  Headquarters, Qiaokou District, Wuhan City,
-                                  China
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </PopoverPanel>
-                </Popover>
-              </li>
-            </ul>
+                          </Popover.Panel>
+                        </Transition>
+                      </>
+                    )}
+                  </Popover>
+                ) : (
+                  <Link
+                    key={page.name}
+                    to={page.href}
+                    className="text-base font-medium text-gray-700 hover:text-indigo-600"
+                  >
+                    {page.name}
+                  </Link>
+                )
+              )}
+              {/* Mega Menu Component - Desktop */}
+              <MegaMenu
+                categories={categories}
+                featuredProducts={featuredProducts}
+              />
+            </nav>
 
-            {/* Desktop Search */}
-            <div className="hidden lg:flex items-center gap-4">
+            {/* Search and CTA */}
+            <div className="hidden lg:flex items-center space-x-4">
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
@@ -364,219 +378,264 @@ function Header() {
                 </button>
               </form>
               <Link
-                className="py-2 px-5 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition duration-200"
                 to="/quote"
+                className="py-2 px-5 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition duration-200"
               >
                 Get A Quote
               </Link>
             </div>
 
-            {/* Mobile Menu Button and Search Toggle */}
-            <div className="lg:hidden flex items-center gap-2">
+            {/* Mobile Menu Button */}
+            <div className="flex lg:hidden items-center space-x-2">
               <button
                 type="button"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-400 hover:text-indigo-600"
+                className="p-2 text-gray-500 hover:text-indigo-600 focus:outline-none"
               >
                 <BsSearch size={20} />
               </button>
               <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="relative rounded-md bg-white p-2 text-gray-400"
+                className="p-2 text-gray-500 hover:text-indigo-600 focus:outline-none"
               >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Open menu</span>
-                <BsJustify className="text-indigo-600 rounded" size={28} />
+                <BsJustify size={24} />
               </button>
             </div>
           </div>
 
-          {/* Mobile Search Bar - Expandable */}
-          {isSearchOpen && (
-            <div className="pb-4 lg:hidden">
-              <form onSubmit={handleSearch} className="relative">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-2 pl-4 pr-10 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-                  autoFocus
-                />
-                <button
-                  type="submit"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600"
-                >
-                  <BsSearch size={16} />
-                </button>
-              </form>
-            </div>
-          )}
+          {/* Mobile Search Bar */}
+          <AnimatePresence>
+            {isSearchOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="pb-4 lg:hidden overflow-hidden"
+              >
+                <form onSubmit={handleSearch} className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full py-2 pl-4 pr-10 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600"
+                  >
+                    <BsSearch size={16} />
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      </header>
 
       {/* Mobile Menu */}
-      <Dialog open={open} onClose={setOpen} className="relative z-50 lg:hidden">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
-        />
-
-        <div className="fixed inset-0 z-50 flex">
-          <DialogPanel
-            transition
-            className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-[closed]:-translate-x-full"
+      <Transition show={open} as={Fragment}>
+        <div className="relative z-50 lg:hidden">
+          {/* Background overlay */}
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
           >
-            <div className="flex px-4 pb-2 pt-5">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
-              >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Close menu</span>
-                <BsX size={30} />
-              </button>
-            </div>
+            <div
+              className="fixed inset-0 bg-black bg-opacity-25"
+              onClick={() => setOpen(false)}
+            />
+          </Transition.Child>
 
-            {/* Search in Mobile Menu */}
-            <div className="px-4 py-2 mt-8">
-              <form onSubmit={handleSearch} className="relative">
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-2 pl-4 pr-10 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600"
-                >
-                  <BsSearch size={16} />
-                </button>
-              </form>
-            </div>
-
-            {/* Mobile Navigation */}
-            <div className="mt-2 px-4 py-6">
-              {navigation.pages.map((page) => (
-                <div key={page.name} className="py-2">
-                  <Link
-                    to={page.href}
-                    className="block font-medium text-gray-900 hover:text-indigo-600 transition duration-200"
+          {/* Sliding menu panel */}
+          <Transition.Child
+            as={Fragment}
+            enter="transition ease-in-out duration-300 transform"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="transition ease-in-out duration-300 transform"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
+          >
+            <div className="fixed inset-y-0 left-0 flex max-w-xs w-full">
+              <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-xl">
+                <div className="absolute top-0 right-0 -mr-12 pt-2">
+                  <button
+                    type="button"
+                    className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                     onClick={() => setOpen(false)}
                   >
-                    {page.name}
-                  </Link>
-                </div>
-              ))}
-
-              {/* Products Dropdown in Mobile */}
-              <div className="py-2">
-                <div
-                  className="flex items-center justify-between font-medium text-gray-900 cursor-pointer"
-                  onClick={() =>
-                    setActiveCategory(
-                      activeCategory === "products" ? null : "products"
-                    )
-                  }
-                >
-                  <span>Products</span>
-                  {activeCategory === "products" ? (
-                    <BsChevronDown size={16} />
-                  ) : (
-                    <BsChevronDown size={16} className="transform -rotate-90" />
-                  )}
+                    <span className="sr-only">Close sidebar</span>
+                    <BsX className="h-6 w-6 text-white" aria-hidden="true" />
+                  </button>
                 </div>
 
-                {activeCategory === "products" && (
-                  <div className="mt-2 ml-4 space-y-2">
-                    {categories.map((category) => (
-                      <div key={category.id} className="py-1">
-                        <div
-                          className="flex items-center justify-between text-gray-700 cursor-pointer"
-                          onClick={() =>
-                            setActiveCategory(
-                              activeCategory === category.id
-                                ? "products"
-                                : category.id
-                            )
-                          }
-                        >
+                <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+                  <div className="flex-shrink-0 flex items-center px-4">
+                    <img
+                      className="h-10 w-auto"
+                      src="/Media/Taurean IT Logo1_vectorized.png"
+                      alt="Corhunter Garment"
+                    />
+                  </div>
+                  <div className="mt-5 px-2 space-y-1">
+                    <Link
+                      to="/"
+                      className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+                      onClick={() => setOpen(false)}
+                    >
+                      Home
+                    </Link>
+
+                    {/* Products Menu */}
+                    <div>
+                      <button
+                        onClick={() =>
+                          setActiveMobileSubmenu(
+                            activeMobileSubmenu === "products"
+                              ? null
+                              : "products"
+                          )
+                        }
+                        className="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+                      >
+                        <span>Products</span>
+                        <BsChevronDown
+                          className={`h-4 w-4 transition-transform ${
+                            activeMobileSubmenu === "products"
+                              ? "rotate-180"
+                              : ""
+                          }`}
+                        />
+                      </button>
+
+                      {/* Mega Menu Component - Mobile */}
+                      <MegaMenu
+                        categories={categories}
+                        featuredProducts={featuredProducts}
+                        isMobile={true}
+                        isOpen={activeMobileSubmenu === "products"}
+                        onClose={() => setOpen(false)}
+                      />
+                    </div>
+
+                    {/* Other Navigation Items */}
+                    {navigation.pages.slice(1).map((page) => (
+                      <div key={page.name}>
+                        {page.hasSubmenu ? (
+                          <div>
+                            <button
+                              onClick={() =>
+                                setActiveMobileSubmenu(
+                                  activeMobileSubmenu === page.name
+                                    ? null
+                                    : page.name
+                                )
+                              }
+                              className="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+                            >
+                              <span>{page.name}</span>
+                              <BsChevronDown
+                                className={`h-4 w-4 transition-transform ${
+                                  activeMobileSubmenu === page.name
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                              />
+                            </button>
+                            {activeMobileSubmenu === page.name && (
+                              <div className="mt-2 pl-4 space-y-1">
+                                {page.submenu.map((item) => (
+                                  <Link
+                                    key={item.name}
+                                    to={item.href}
+                                    className="block px-3 py-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+                                    onClick={() => setOpen(false)}
+                                  >
+                                    {item.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
                           <Link
-                            to={`/products?category=${encodeURIComponent(
-                              category.name
-                            )}`}
-                            className="hover:text-indigo-600 transition duration-200"
+                            to={page.href}
+                            className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
                             onClick={() => setOpen(false)}
                           >
-                            {category.name}
+                            {page.name}
                           </Link>
-                          {category.subcategories.length > 0 &&
-                            (activeCategory === category.id ? (
-                              <BsChevronDown size={14} />
-                            ) : (
-                              <BsChevronDown
-                                size={14}
-                                className="transform -rotate-90"
-                              />
-                            ))}
-                        </div>
-
-                        {activeCategory === category.id &&
-                          category.subcategories.length > 0 && (
-                            <ul className="ml-4 mt-1 space-y-1">
-                              {category.subcategories.map(
-                                (subcategory, index) => (
-                                  <li key={index} className="py-1">
-                                    <Link
-                                      to={`/products?category=${encodeURIComponent(
-                                        category.name
-                                      )}&subcategory=${encodeURIComponent(
-                                        subcategory
-                                      )}`}
-                                      className="text-gray-500 hover:text-indigo-600 transition duration-200 text-sm"
-                                      onClick={() => setOpen(false)}
-                                    >
-                                      {subcategory}
-                                    </Link>
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          )}
+                        )}
                       </div>
                     ))}
-                    <div className="pt-2">
-                      <Link
-                        to="/products"
-                        className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
-                        onClick={() => setOpen(false)}
-                      >
-                        View all products
-                        <BsArrowRight className="ml-1 h-4 w-4" />
-                      </Link>
-                    </div>
                   </div>
-                )}
+                </div>
+
+                <div className="flex-shrink-0 p-4 border-t border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <a
+                      href="https://www.facebook.com/corhuntertacticalgear/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-indigo-600 transition-colors"
+                    >
+                      <BsFacebook size={18} />
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/company/corhuntergarment/about/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-indigo-600 transition-colors"
+                    >
+                      <BsLinkedin size={18} />
+                    </a>
+                    <a
+                      href="https://www.youtube.com/@corhuntermilitaryuniformst2062/featured"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-500 hover:text-indigo-600 transition-colors"
+                    >
+                      <BsYoutube size={18} />
+                    </a>
+                  </div>
+                  <div className="mt-4">
+                    <Link
+                      to="/inquiry"
+                      className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                      onClick={() => setOpen(false)}
+                    >
+                      Request Inquiry
+                    </Link>
+                  </div>
+                  <div className="mt-4 flex flex-col space-y-2 text-sm text-gray-500">
+                    <a href="tel:+8613377883692" className="flex items-center">
+                      <BsTelephone className="mr-2 h-4 w-4 text-gray-400" />
+                      +8613377883692
+                    </a>
+                    <a
+                      href="mailto:sara@whvison.cn"
+                      className="flex items-center"
+                    >
+                      <BsEnvelope className="mr-2 h-4 w-4 text-gray-400" />
+                      sara@whvison.cn
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="border-t border-gray-200 px-4 py-6">
-              <Link
-                to="/quote"
-                className="block text-center py-3 px-5 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition duration-200"
-                onClick={() => setOpen(false)}
-              >
-                Get A Quote
-              </Link>
-            </div>
-          </DialogPanel>
+          </Transition.Child>
         </div>
-      </Dialog>
-    </section>
+      </Transition>
+    </>
   );
 }
 
