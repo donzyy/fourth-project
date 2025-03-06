@@ -100,7 +100,7 @@ function Products() {
       subcategory: "ACU uniform",
       description:
         "Customization: Min. Order: 500 Sets. Material: 65% Polyester 35% Cotton. Feature: Ripstop.",
-      url: "/products/acu-camo-military-uniforms",
+      url: "/product/acu-camo-military-uniforms",
     },
     {
       id: 2,
@@ -111,7 +111,7 @@ function Products() {
       subcategory: "BDU uniform",
       description:
         "65% polyester and 35% cotton, plaid camouflage, light, durable, breathable, protective",
-      url: "/products/bdu-military-uniform",
+      url: "/product/bdu-military-uniform",
     },
     {
       id: 3,
@@ -122,7 +122,7 @@ function Products() {
       subcategory: "Frog Suit",
       description:
         "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Anti-Static.",
-      url: "/products/frog-suit-g2-military-dress-uniforms",
+      url: "/product/frog-suit-g2-military-dress-uniforms",
     },
     {
       id: 4,
@@ -133,7 +133,7 @@ function Products() {
       subcategory: "ACU uniform",
       description:
         "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Breathable.",
-      url: "/products/acu-camouflage-combat-uniforms",
+      url: "/product/acu-camouflage-combat-uniforms",
     },
     {
       id: 5,
@@ -144,7 +144,7 @@ function Products() {
       subcategory: "ACU uniform",
       description:
         "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Breathability.",
-      url: "/products/acu-digital-ocean-camouflage-uniforms",
+      url: "/product/acu-digital-ocean-camouflage-uniforms",
     },
     {
       id: 6,
@@ -154,7 +154,7 @@ function Products() {
       subcategory: "ACU uniform",
       description:
         "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Durable.",
-      url: "/products/custom-black-python-camouflage-acu-uniform",
+      url: "/product/custom-black-python-camouflage-acu-uniform",
     },
     {
       id: 7,
@@ -165,7 +165,7 @@ function Products() {
       subcategory: "ACU uniform",
       description:
         "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Waterproof.",
-      url: "/products/in-stock-acu-uniform-digital-jungle",
+      url: "/product/in-stock-acu-uniform-digital-jungle",
     },
     {
       id: 8,
@@ -176,7 +176,7 @@ function Products() {
       subcategory: "Frog Suit",
       description:
         "Camouflage tactical frog suit, made of elastic fabric, breathable and skin-friendly, soft and comfortable.",
-      url: "/products/g3-outdoor-training-frog-suit-physical",
+      url: "/product/g3-outdoor-training-frog-suit-physical",
     },
     {
       id: 9,
@@ -187,7 +187,7 @@ function Products() {
       subcategory: "Frog Suit",
       description:
         "Camouflage tactical frog suit, made of elastic fabric, breathable and skin-friendly, soft and comfortable.",
-      url: "/products/desert-python-pattern-camouflage-long-sleeved",
+      url: "/product/desert-python-pattern-camouflage-long-sleeved",
     },
   ];
 

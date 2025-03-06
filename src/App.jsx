@@ -17,7 +17,7 @@ function App() {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/contactus" element={<Contactus />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/product" element={<ProductPage />} />
+        <Route path="/product/:productSlug" element={<ProductPage />} />
         <Route path="/quote" element={<GetAQuote />} />
       </Routes>
     </Router>
