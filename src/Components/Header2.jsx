@@ -49,7 +49,6 @@ function Header() {
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Searching for:", searchQuery);
-    // Implement search functionality or redirect to search page
   };
 
   const categories = [
