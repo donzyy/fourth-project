@@ -72,7 +72,7 @@ function ProductSection() {
               </h2>
             </motion.div>
             <motion.div
-              variants={buttonVariants}
+              /* variants={buttonVariants} */
               initial="hidden"
               animate="visible"
               whileHover="hover"

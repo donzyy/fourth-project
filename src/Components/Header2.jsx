@@ -362,6 +362,7 @@ function Header() {
               <MegaMenu
                 categories={categories}
                 featuredProducts={featuredProducts}
+                scrolled={scrolled}
               />
             </nav>
 

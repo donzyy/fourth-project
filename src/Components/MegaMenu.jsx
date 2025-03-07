@@ -11,6 +11,7 @@ const MegaMenu = ({
   onClose = () => {},
   activeMobileSubmenu = null,
   setActiveMobileSubmenu = () => {},
+  scrolled = false, // Default to false if not provided
 }) => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -129,7 +130,14 @@ const MegaMenu = ({
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <div className="fixed inset-x-0 top-auto -mt-4 z-50 bg-white shadow-xl">
+        <div
+          className={`fixed inset-x-0 z-40 bg-white shadow-xl ${
+            scrolled ? "top-[58.5px]" : "top-[99px]"
+          }`}
+          style={{
+            transition: "top 0.3s ease-in-out",
+          }}
+        >
           <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {/* Categories (3 columns) */}
@@ -137,7 +145,7 @@ const MegaMenu = ({
                 {categories.map((category) => (
                   <div
                     key={category.id}
-                    className="group relative p-4 rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+                    className="group relative p-4 rounded-lg bg-white  hover:shadow-lg transition-shadow duration-300"
                   >
                     <div className="grid grid-cols-2 gap-3">
                       {/* Column 1: Category Image */}
