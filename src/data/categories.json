@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "Military",
+    "subcategories": [
+      "Uniforms",
+      "Tactical Uniforms",
+      "Military Beret, Cap & Hat",
+      "Ceremonial Uniforms",
+      "Military Boots",
+      "Bulletproof vest / Equipment",
+      "Military Bags",
+      "Protective Knee Cap"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Police",
+    "subcategories": [
+      "Police Uniforms",
+      "Police Boots",
+      "Ceremonial Uniforms",
+      "Bulletproof vest / Equipment",
+      "Reflective Clothing",
+      "Protective Knee Cap"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "School Uniform",
+    "subcategories": ["High School", "College", "Polo T-shirts"]
+  },
+  {
+    "id": 4,
+    "name": "Private Security",
+    "subcategories": [
+      "Security Officer Uniforms",
+      "Sequence Tactical Jacket",
+      "Reflective Clothing"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Tactical Wear/Gear",
+    "subcategories": ["Tactical Glasses", "Tactical Gloves", "Tactical Belts"]
+  },
+  {
+    "id": 6,
+    "name": "Workwear",
+    "subcategories": [
+      "Work clothing",
+      "Chef Clothing",
+      "Hotel Uniforms",
+      "Aviation Uniforms",
+      "Workwear Shirts"
+    ]
+  }
+]

@@ -1,23 +1,15 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
-import {
-  BsSearch,
-  BsCart,
-  BsFilter,
-  BsChevronDown,
-  BsChevronRight,
-  BsEnvelope,
-  BsX,
-} from "react-icons/bs";
+import { BsCart, BsEnvelope } from "react-icons/bs";
 import DefaultLayout from "../../Layout/DefaultLayout";
-import SideBarContactUs from "./SideBarContactUs";
-import SideBarLatestProducts from "./SideBarLatestProducts";
+import SideBar from "./SideBar";
+import Data from "../../data";
 
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [categories, setCategories] = useState(Data.categories);
+  //const [products, setProducts] = useState(Data.products);
   const [activeCategory, setActiveCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,69 +59,9 @@ function Products() {
     }
   }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
 
-  // this useEffect to reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
-
-  const categories = [
-    {
-      id: 1,
-      name: "Military",
-      subcategories: [
-        "Uniforms",
-        "Tactical Uniforms",
-        "Military Beret, Cap & Hat",
-        "Ceremonial Uniforms",
-        "Military Boots",
-        "Bulletproof vest / Equipment",
-        "Military Bags",
-        "Protective Knee Cap",
-      ],
-    },
-    {
-      id: 2,
-      name: "Police",
-      subcategories: [
-        "Police Uniforms",
-        "Police Boots",
-        "Ceremonial Uniforms",
-        "Bulletproof vest / Equipment",
-        "Reflective Clothing",
-        "Protective Knee Cap",
-      ],
-    },
-    {
-      id: 3,
-      name: "School Uniform",
-      subcategories: ["High School", "College", "Polo T-shirts"],
-    },
-    {
-      id: 4,
-      name: "Private Security",
-      subcategories: [
-        "Security Officer Uniforms",
-        "Sequence Tactical Jacket",
-        "Reflective Clothing",
-      ],
-    },
-    {
-      id: 5,
-      name: "Tactical Wear/Gear",
-      subcategories: ["Tactical Glasses", "Tactitcal Gloves", "Tacitcal Belts"],
-    },
-    {
-      id: 6,
-      name: "Workwear",
-      subcategories: [
-        "Work clothing",
-        "Chef Clothing",
-        "Hotel Uniforms",
-        "Aviation Uniforms",
-        "Workwear Shirts",
-      ],
-    },
-  ];
 
   const products = [
     {
@@ -438,100 +370,6 @@ function Products() {
   return (
     <DefaultLayout>
       <div className="bg-gray-50 min-h-screen">
-        {/* Mobile filter dialog */}
-        <div
-          className={`fixed inset-0 flex z-[100] lg:hidden ${
-            mobileFiltersOpen
-              ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
-          }`}
-        >
-          <div
-            className="fixed inset-0 bg-black bg-opacity-25"
-            onClick={() => setMobileFiltersOpen(false)}
-          ></div>
-
-          <div className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl transition-all transform ease-in-out duration-300">
-            <div className="flex items-center justify-between px-4">
-              <h2 className="text-lg font-medium text-gray-900">Filters</h2>
-              <button
-                type="button"
-                className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
-                onClick={() => setMobileFiltersOpen(false)}
-              >
-                <span className="sr-only">Close menu</span>
-                <BsX className="h-6 w-6" />
-              </button>
-            </div>
-
-            {/* Mobile filters */}
-            <div className="mt-4 border-t border-gray-200">
-              <div className="px-4 py-6">
-                <h3 className="font-medium text-gray-900">Categories</h3>
-                <ul className="mt-4 space-y-4">
-                  {categories.map((category) => (
-                    <li key={category.id} className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Link
-                          to={`/products?category=${encodeURIComponent(
-                            category.name
-                          )}`}
-                          className={`text-gray-600 hover:text-indigo-600 ${
-                            categoryQuery === category.name
-                              ? "text-indigo-600 font-medium"
-                              : ""
-                          }`}
-                        >
-                          {category.name}
-                        </Link>
-                        {category.subcategories.length > 0 && (
-                          <button
-                            onClick={() => toggleCategory(category.name)}
-                            className="text-gray-400 hover:text-gray-500"
-                          >
-                            {activeCategory === category.name ? (
-                              <BsChevronDown size={16} />
-                            ) : (
-                              <BsChevronRight size={16} />
-                            )}
-                          </button>
-                        )}
-                      </div>
-
-                      {activeCategory === category.name &&
-                        category.subcategories.length > 0 && (
-                          <ul className="ml-4 space-y-2">
-                            {category.subcategories.map(
-                              (subcategory, index) => (
-                                <li key={index}>
-                                  <Link
-                                    to={`/products?category=${encodeURIComponent(
-                                      category.name
-                                    )}&subcategory=${encodeURIComponent(
-                                      subcategory
-                                    )}`}
-                                    className={`text-gray-500 hover:text-indigo-600 ${
-                                      categoryQuery === category.name &&
-                                      subCategoryQuery === subcategory
-                                        ? "text-indigo-600 font-medium"
-                                        : ""
-                                    }`}
-                                  >
-                                    {subcategory}
-                                  </Link>
-                                </li>
-                              )
-                            )}
-                          </ul>
-                        )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {isLoading ? (
@@ -541,118 +379,20 @@ function Products() {
             </div>
           ) : (
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Mobile Filter Toggle */}
-              <div className="lg:hidden mb-4">
-                <button
-                  onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                  className="w-full flex items-center justify-between bg-white p-4 rounded-lg shadow-sm"
-                >
-                  <span className="font-medium flex items-center">
-                    <BsFilter className="w-5 h-5 mr-2" /> Filters
-                  </span>
-                  <BsChevronDown
-                    className={`w-5 h-5 transition-transform ${
-                      mobileFiltersOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Sidebar */}
-              <aside
-                className={`lg:w-1/4 ${
-                  mobileFiltersOpen ? "block" : "hidden lg:block"
-                }`}
-              >
-                <div className="sticky top-8 space-y-6">
-                  {/* Search */}
-                  <div className="bg-white p-4 rounded-lg shadow-sm">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Search products..."
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                        value={searchQuery}
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                          if (e.target.value) {
-                            setSearchParams({ search: e.target.value });
-                          } else {
-                            setSearchParams({});
-                          }
-                        }}
-                      />
-                      <BsSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                    </div>
-                  </div>
-
-                  {/* Categories */}
-                  <div className="bg-white p-4 rounded-lg shadow-sm">
-                    <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                      Categories
-                    </h2>
-                    <ul className="space-y-1">
-                      {categories.map((category) => (
-                        <li key={category.id} className="py-1">
-                          <div
-                            className="flex items-center justify-between cursor-pointer hover:text-indigo-600 transition-colors"
-                            onClick={() => toggleCategory(category.name)}
-                          >
-                            <span
-                              className={`font-medium ${
-                                categoryQuery === category.name
-                                  ? "text-indigo-600"
-                                  : ""
-                              }`}
-                            >
-                              {category.name}
-                            </span>
-                            {category.subcategories.length > 0 &&
-                              (activeCategory === category.name ? (
-                                <BsChevronDown className="h-4 w-4" />
-                              ) : (
-                                <BsChevronRight className="h-4 w-4" />
-                              ))}
-                          </div>
-
-                          {activeCategory === category.name &&
-                            category.subcategories.length > 0 && (
-                              <ul className="ml-4 mt-1 space-y-1">
-                                {category.subcategories.map(
-                                  (subcategory, index) => (
-                                    <li key={index} className="py-1">
-                                      <Link
-                                        to={`/products?category=${encodeURIComponent(
-                                          category.name
-                                        )}&subcategory=${encodeURIComponent(
-                                          subcategory
-                                        )}`}
-                                        className={`text-gray-600 hover:text-indigo-600 transition-colors ${
-                                          categoryQuery === category.name &&
-                                          subCategoryQuery === subcategory
-                                            ? "text-indigo-600 font-medium"
-                                            : ""
-                                        }`}
-                                      >
-                                        {subcategory}
-                                      </Link>
-                                    </li>
-                                  )
-                                )}
-                              </ul>
-                            )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Latest Products */}
-                  <SideBarLatestProducts />
-
-                  {/* Contact Us */}
-                  <SideBarContactUs />
-                </div>
-              </aside>
+              {/* Sidebar - now handles both mobile and desktop */}
+              <SideBar
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                setSearchParams={setSearchParams}
+                categories={categories}
+                activeCategory={activeCategory}
+                toggleCategory={toggleCategory}
+                categoryQuery={categoryQuery}
+                subCategoryQuery={subCategoryQuery}
+                latestProducts={latestProducts}
+                mobileFiltersOpen={mobileFiltersOpen}
+                setMobileFiltersOpen={setMobileFiltersOpen}
+              />
 
               {/* Main Content */}
               <div className="lg:w-3/4">

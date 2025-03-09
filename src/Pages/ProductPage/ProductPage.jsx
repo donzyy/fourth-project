@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import {
@@ -13,9 +13,18 @@ import {
   BsSend,
   BsCheck2,
 } from "react-icons/bs";
+import Data from "../../data";
+import SideBar from "../Products/SideBar";
 import DefaultLayout from "../../Layout/DefaultLayout";
 
 export default function ProductPage() {
+  const [categories, setCategories] = useState(Data.categories);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState(Data.products);
+  const latestProducts = products.slice(0, 4);
+  const activeCategory = null;
+
   const [activeImage, setActiveImage] = useState(0);
   const thumbnailsRef = useRef(null);
   const [formData, setFormData] = useState({
@@ -30,6 +39,42 @@ export default function ProductPage() {
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const imageRef = useRef(null);
   const zoomRef = useRef(null);
+
+  // Loading spinner component
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+    </div>
+  );
+
+  // No items found component
+  const NoItemsFound = () => (
+    <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+        No items found
+      </h3>
+      <p className="text-gray-600 mb-6">
+        However, we can get that for you. We specialize in custom military and
+        tactical equipment. Send us an enquiry and we'll help you find exactly
+        what you need.
+      </p>
+      <Link
+        to="/contactus"
+        className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+      >
+        <BsEnvelope className="mr-2" /> Send Enquiry
+      </Link>
+    </div>
+  );
+
+  useEffect(() => {
+    // Simulate initial page load
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const product = {
     name: "ACU Camo Military Uniforms",
@@ -327,79 +372,14 @@ export default function ProductPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar */}
-            <aside className="w-full lg:w-1/4 space-y-6 hidden md:block">
-              {/* Categories */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
-                <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                  Categories
-                </h2>
-                <div className="space-y-1">
-                  {product.categories.map((category, index) => (
-                    <CategoryItem key={index} category={category} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Latest Products */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
-                <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                  Latest Products
-                </h2>
-                <div className="grid grid-cols-2 gap-2">
-                  {product.latestProducts.map((item, index) => (
-                    <Link
-                      key={index}
-                      to={`/products/${item.slug}`}
-                      className="block group"
-                    >
-                      <div className="relative aspect-square overflow-hidden rounded-md">
-                        <img
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* Contact Info */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
-                <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                  Contact Us
-                </h2>
-                <div className="space-y-3 text-sm">
-                  <p className="flex">
-                    <span className="font-semibold w-16">Tel:</span>
-                    <a
-                      href={`tel:${product.contactInfo.phone}`}
-                      className="text-gray-700 hover:text-indigo-600"
-                    >
-                      {product.contactInfo.phone}
-                    </a>
-                  </p>
-                  <p className="flex">
-                    <span className="font-semibold w-16">E-mail:</span>
-                    <a
-                      href={`mailto:${product.contactInfo.email}`}
-                      className="text-gray-700 hover:text-indigo-600"
-                    >
-                      {product.contactInfo.email}
-                    </a>
-                  </p>
-                  <p className="flex">
-                    <span className="font-semibold w-16 flex-shrink-0">
-                      Address:
-                    </span>
-                    <span className="text-gray-700">
-                      {product.contactInfo.address}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </aside>
+            <SideBar
+              showSearch={false}
+              categories={categories}
+              activeCategory={activeCategory}
+              latestProducts={latestProducts}
+              mobileFiltersOpen={mobileFiltersOpen}
+              setMobileFiltersOpen={setMobileFiltersOpen}
+            />
 
             {/* Main Content */}
             <div className="w-full lg:w-3/4">
