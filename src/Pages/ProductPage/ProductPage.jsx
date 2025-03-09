@@ -357,6 +357,7 @@ export default function ProductPage() {
                           src={item.image || "/placeholder.svg"}
                           alt={item.name}
                           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
                         />
                       </div>
                     </Link>
@@ -422,6 +423,7 @@ export default function ProductPage() {
                           }
                           alt={product.name}
                           className="object-cover w-full h-full"
+                          loading="lazy"
                         />
                         <div
                           ref={zoomRef}
@@ -461,6 +463,7 @@ export default function ProductPage() {
                                 src={image || "/placeholder.svg"}
                                 alt={`${product.name} thumbnail ${index + 1}`}
                                 className="object-cover w-full h-full"
+                                loading="lazy"
                               />
                             </button>
                           ))}

@@ -7,12 +7,11 @@ import {
   BsFilter,
   BsChevronDown,
   BsChevronRight,
-  BsTelephone,
-  BsEnvelope,
-  BsGeoAlt,
   BsX,
 } from "react-icons/bs";
 import DefaultLayout from "../../Layout/DefaultLayout";
+import SideBarContactUs from "./SideBarContactUs";
+import SideBarLatestProducts from "./SideBarLatestProducts";
 
 function Products() {
   const [activeCategory, setActiveCategory] = useState("");
@@ -31,49 +30,69 @@ function Products() {
   const categories = [
     {
       id: 1,
-      name: "Military Combat Uniform",
+      name: "Military",
       subcategories: [
-        "ACU uniform",
-        "BDU uniform",
-        "Frog Suit",
-        "Military Jacket",
+        "Uniforms",
+        "Tactical Uniforms",
+        "Military Beret, Cap & Hat",
+        "Ceremonial Uniforms",
+        "Military Boots",
+        "Bulletproof vest / Equipment",
+        "Military Bags",
+        "Protective Knee Cap"
       ],
     },
     {
       id: 2,
-      name: "Tactical Uniform",
+      name: "Police",
       subcategories: [
-        "Tactical Suit",
-        "Tactical Shirt",
-        "Military Tactical Pants",
-        "Camouflage Clothing",
+        "Police Uniforms",
+        "Police Boots",
+        "Ceremonial Uniforms",
+        "Bulletproof vest / Equipment",
+        "Reflective Clothing",
+        "Protective Knee Cap",
       ],
     },
     {
       id: 3,
-      name: "Security Uniform",
+      name: "School Uniform",
       subcategories: [
-        "Security Officer Uniform",
-        "Security Tactical jacket",
-        "Reflective Clothing",
+        "High School",
+        "College",
+        "Polo T-shirts",
       ],
     },
     {
       id: 4,
-      name: "Military Beret & Cap & Hat",
-      subcategories: ["Beret", "Cap", "Hat"],
+      name: "Private Security",
+      subcategories: [
+        "Security Officer Uniforms",
+        "Sequence Tactical Jacket",
+        "Reflective Clothing",
+      ],
     },
     {
       id: 5,
-      name: "Military Bags",
-      subcategories: ["Backpack"],
+      name: "Tactical Wear/Gear",
+      subcategories: [
+        "Tactical Glasses",
+        "Tactitcal Gloves",
+        "Tacitcal Belts",
+      ],
     },
     {
       id: 6,
-      name: "Tactical Boots",
-      subcategories: [],
+      name: "Workwear",
+      subcategories: [
+        "Work clothing",
+        "Chef Clothing",
+        "Hotel Uniforms",
+        "Aviation Uniforms",
+        "Workwear Shirts",
+      ],
     },
-    {
+/*     {
       id: 7,
       name: "Bulletproof Equipment",
       subcategories: ["Bulletproof Helmet", "Bulletproof Vest"],
@@ -87,7 +106,7 @@ function Products() {
         "Tactical Belt",
         "Protective Gear Kneepad",
       ],
-    },
+    }, */
   ];
 
   const products = [
@@ -424,35 +443,13 @@ function Products() {
                     ))}
                   </div>
                 </div>
+                {/* <SideBarLatestProducts /> */}
+                {/* Latest Products */}
 
                 {/* Contact Us */}
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                    Contact Us
-                  </h2>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-start">
-                      <BsTelephone className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
-                      <span>+8613377883692</span>
-                    </div>
-                    <div className="flex items-start">
-                      <BsEnvelope className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
-                      <a
-                        href="mailto:sara@whvison.cn"
-                        className="text-indigo-600 hover:underline"
-                      >
-                        sara@whvison.cn
-                      </a>
-                    </div>
-                    <div className="flex items-start">
-                      <BsGeoAlt className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
-                      <span>
-                        Room A404, Building 2, Huifeng Corporate Headquarters,
-                        Qiaokou District, Wuhan City, Hubei Province, China
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <SideBarContactUs />
+                {/* Contact Us */}
+
               </div>
             </aside>
 
