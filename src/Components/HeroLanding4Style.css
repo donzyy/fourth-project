@@ -1,0 +1,133 @@
+/* Make the carousel take up full width and height */
+/* .swiper {
+    width: 100%;
+    height: 100vh; 
+  } */ /* Full viewport height belongs to the heigt property */
+  
+  /* Ensure images cover the container completely without white space */
+  .swiper-slide img {
+    width: 100%;
+    height: 100%; /* Make sure it fully occupies the height */
+    object-fit: cover; /* Ensures the image covers the container without white space */
+  }
+  
+  /* Autoplay progress circle */
+  .autoplay-progress {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 10;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .autoplay-progress svg {
+    --progress: 0;
+    position: absolute;
+    left: 0;
+    top: 0px;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    stroke-width: 4px;
+    stroke: #ffffff;
+    fill: none;
+    stroke-dashoffset: calc(125.6px * (1 - var(--progress)));
+    stroke-dasharray: 125.6;
+    transform: rotate(-90deg);
+  }
+  
+  /* Navigation button styling */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #ffffff !important; /* Make the navigation buttons white */
+    z-index: 11; /* Ensure the buttons are on top of other elements */
+    font-size: 30px; /* Increase size if needed */
+    width: 45px;
+    height: 45px;
+    /* background: rgba(0, 0, 0, 0.5); */ /* Add background for visibility */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Change the color when hovering over buttons */
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    color: #0000ff !important; /* Change color on hover */
+  }
+  
+  /* Pagination bullet styling */
+  .swiper-pagination-bullet {
+    background-color: #ffffff;
+    opacity: 0.6;
+  }
+  
+  .swiper-pagination-bullet-active {
+    background-color: #3c5be7;
+    opacity: 1;
+  }
+  
+  /* Mobile-specific adjustments */
+  @media (max-width: 768px) {
+    .swiper {
+        height: 70vh; /* Reduce height slightly on smaller screens */
+    }
+  
+    .swiper-button-next,
+    .swiper-button-prev {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /* Custom styles for the react-slick arrows */
+  .slick-prev, 
+  .slick-next {
+    font-size: 0; /* Hide the default text */
+    width: 40px; /* Adjust size */
+    height: 40px; /* Adjust size */
+    background-color: rgba(0, 0, 0, 0.5); /* Add background color */
+    border-radius: 50%; /* Make the arrows circular */
+    color: blue; /* Change the arrow color */
+    z-index: 1; /* Make sure arrows are visible above the slides */
+  }
+  
+  .slick-prev:hover,
+  .slick-next:hover {
+    background-color: rgba(0, 4, 255, 0.8); /* Change background color on hover */
+  }
+  
+  .slick-prev::before,
+  .slick-next::before {
+    font-size: 24px; /* Adjust arrow icon size */
+    color: blue; /* Change the color of the arrows */
+  }
+  
+  .slick-prev {
+    left: -50px; /* Position adjustment */
+  }
+  
+  .slick-next {
+    right: -50px; /* Position adjustment */
+  }
+  
