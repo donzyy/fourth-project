@@ -1,6 +1,8 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   BsSearch,
   BsCart,
@@ -15,10 +17,13 @@ import {
 import DefaultLayout from "../../Layout/DefaultLayout";
 
 function Products() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
 
   const toggleCategory = (category) => {
     if (activeCategory === category) {
@@ -27,6 +32,45 @@ function Products() {
       setActiveCategory(category);
     }
   };
+
+  const categoryQuery = searchParams.get("category");
+  const idQuery = searchParams.get("id");
+  const subCategoryQuery = searchParams.get("subCategory");
+  const nameQuery = searchParams.get("name");
+
+  // Initial page load effect
+  useEffect(() => {
+    // Simulate initial page load
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (
+      categoryQuery ||
+      subCategoryQuery ||
+      idQuery ||
+      nameQuery ||
+      searchQuery
+    ) {
+      setIsFilterLoading(true);
+
+      // Simulate loading delay, temp till db fetch is added
+      const timer = setTimeout(() => {
+        setIsFilterLoading(false);
+      }, 800);
+
+      return () => clearTimeout(timer);
+    }
+  }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
+
+  // this useEffect to reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
 
   const categories = [
     {
@@ -191,13 +235,66 @@ function Products() {
     },
   ];
 
-  const latestProducts = products.slice(0, 4);
+  // Helper function to normalize text for searching
+  const normalizeText = (text) => {
+    if (!text) return "";
+    return text.toLowerCase().replace(/[\s-]+/g, "");
+  };
 
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = products.filter((product) => {
+    // First filter by search query if it exists
+    if (searchQuery) {
+      const normalizedQuery = normalizeText(searchQuery);
+      const normalizedName = normalizeText(product.name);
+      const normalizedDescription = normalizeText(product.description);
+
+      if (
+        !normalizedName.includes(normalizedQuery) &&
+        !normalizedDescription.includes(normalizedQuery)
+      ) {
+        return false;
+      }
+    }
+
+    // Then filter by category if it exists
+    if (categoryQuery) {
+      const normalizedCategoryQuery = normalizeText(categoryQuery);
+      const normalizedCategory = normalizeText(product.category);
+
+      if (normalizedCategory !== normalizedCategoryQuery) {
+        return false;
+      }
+    }
+
+    // Then filter by subcategory if it exists
+    if (subCategoryQuery) {
+      const normalizedSubCategoryQuery = normalizeText(subCategoryQuery);
+      const normalizedSubCategory = normalizeText(product.subcategory);
+
+      if (normalizedSubCategory !== normalizedSubCategoryQuery) {
+        return false;
+      }
+    }
+
+    // Then filter by id if it exists
+    if (idQuery && product.id !== Number.parseInt(idQuery)) {
+      return false;
+    }
+
+    // Then filter by name if it exists
+    if (nameQuery) {
+      const normalizedNameQuery = normalizeText(nameQuery);
+      const normalizedName = normalizeText(product.name);
+
+      if (!normalizedName.includes(normalizedNameQuery)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const latestProducts = products.slice(0, 4);
 
   const productsPerPage = 9;
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
@@ -225,12 +322,128 @@ function Products() {
     },
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = startPage + maxPagesToShow - 1;
+
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <div className="mt-8 flex justify-center">
+        <nav className="flex items-center space-x-1">
+          <button
+            onClick={() => handlePageChange(1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            First
+          </button>
+
+          {currentPage > 1 && (
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100"
+            >
+              Prev
+            </button>
+          )}
+
+          {pageNumbers.map((number) => (
+            <button
+              key={number}
+              onClick={() => handlePageChange(number)}
+              className={`px-3 py-1 rounded-md ${
+                currentPage === number
+                  ? "bg-indigo-600 text-white"
+                  : "text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              {number}
+            </button>
+          ))}
+
+          {currentPage < totalPages && (
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100"
+            >
+              Next
+            </button>
+          )}
+
+          <button
+            onClick={() => handlePageChange(totalPages)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            Last
+          </button>
+        </nav>
+        <div className="ml-4 text-sm text-gray-500 self-center">
+          Page {currentPage} of {totalPages}
+        </div>
+      </div>
+    );
+  };
+
+  // Loading spinner component
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+    </div>
+  );
+
+  // No items found component
+  const NoItemsFound = () => (
+    <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+        No items found
+      </h3>
+      <p className="text-gray-600 mb-6">
+        However, we can get that for you. We specialize in custom military and
+        tactical equipment. Send us an enquiry and we'll help you find exactly
+        what you need.
+      </p>
+      <Link
+        to="/contactus"
+        className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+      >
+        <BsEnvelope className="mr-2" /> Send Enquiry
+      </Link>
+    </div>
+  );
+
   return (
     <DefaultLayout>
       <div className="bg-gray-50 min-h-screen">
         {/* Mobile filter dialog */}
         <div
-          className={`fixed inset-0 flex z-40 lg:hidden ${
+          className={`fixed inset-0 flex z-[100] lg:hidden ${
             mobileFiltersOpen
               ? "opacity-100 pointer-events-auto"
               : "opacity-0 pointer-events-none"
@@ -266,7 +479,11 @@ function Products() {
                           to={`/products?category=${encodeURIComponent(
                             category.name
                           )}`}
-                          className="text-gray-600 hover:text-indigo-600"
+                          className={`text-gray-600 hover:text-indigo-600 ${
+                            categoryQuery === category.name
+                              ? "text-indigo-600 font-medium"
+                              : ""
+                          }`}
                         >
                           {category.name}
                         </Link>
@@ -296,7 +513,12 @@ function Products() {
                                     )}&subcategory=${encodeURIComponent(
                                       subcategory
                                     )}`}
-                                    className="text-gray-500 hover:text-indigo-600"
+                                    className={`text-gray-500 hover:text-indigo-600 ${
+                                      categoryQuery === category.name &&
+                                      subCategoryQuery === subcategory
+                                        ? "text-indigo-600 font-medium"
+                                        : ""
+                                    }`}
                                   >
                                     {subcategory}
                                   </Link>
@@ -315,269 +537,247 @@ function Products() {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Mobile Filter Toggle */}
-            <div className="lg:hidden mb-4">
-              <button
-                onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                className="w-full flex items-center justify-between bg-white p-4 rounded-lg shadow-sm"
-              >
-                <span className="font-medium flex items-center">
-                  <BsFilter className="w-5 h-5 mr-2" /> Filters
-                </span>
-                <BsChevronDown
-                  className={`w-5 h-5 transition-transform ${
-                    mobileFiltersOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center min-h-[80vh]">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600 mb-4"></div>
+              <p className="text-gray-600">Loading products...</p>
             </div>
-
-            {/* Sidebar */}
-            <aside
-              className={`lg:w-1/4 ${
-                mobileFiltersOpen ? "block" : "hidden lg:block"
-              }`}
-            >
-              <div className="sticky top-8 space-y-6">
-                {/* Search */}
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search products..."
-                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <BsSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                  </div>
-                </div>
-
-                {/* Categories */}
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                    Categories
-                  </h2>
-                  <ul className="space-y-1">
-                    {categories.map((category) => (
-                      <li key={category.id} className="py-1">
-                        <div
-                          className="flex items-center justify-between cursor-pointer hover:text-indigo-600 transition-colors"
-                          onClick={() => toggleCategory(category.name)}
-                        >
-                          <span className="font-medium">{category.name}</span>
-                          {category.subcategories.length > 0 &&
-                            (activeCategory === category.name ? (
-                              <BsChevronDown className="h-4 w-4" />
-                            ) : (
-                              <BsChevronRight className="h-4 w-4" />
-                            ))}
-                        </div>
-
-                        {activeCategory === category.name &&
-                          category.subcategories.length > 0 && (
-                            <ul className="ml-4 mt-1 space-y-1">
-                              {category.subcategories.map(
-                                (subcategory, index) => (
-                                  <li key={index} className="py-1">
-                                    <Link
-                                      to={`/products?category=${encodeURIComponent(
-                                        category.name
-                                      )}&subcategory=${encodeURIComponent(
-                                        subcategory
-                                      )}`}
-                                      className="text-gray-600 hover:text-indigo-600 transition-colors"
-                                    >
-                                      {subcategory}
-                                    </Link>
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Latest Products */}
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                    Latest Products
-                  </h2>
-                  <div className="grid grid-cols-2 gap-2">
-                    {latestProducts.map((product) => (
-                      <Link
-                        key={product.id}
-                        to={product.url}
-                        className="block group"
-                      >
-                        <div className="relative w-full pb-[100%] overflow-hidden rounded-md">
-                          <img
-                            src={product.image || "/placeholder.jpg"}
-                            alt={product.name}
-                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Contact Us */}
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
-                    Contact Us
-                  </h2>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-start">
-                      <BsTelephone className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
-                      <span>+8613377883692</span>
-                    </div>
-                    <div className="flex items-start">
-                      <BsEnvelope className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
-                      <a
-                        href="mailto:sara@whvison.cn"
-                        className="text-indigo-600 hover:underline"
-                      >
-                        sara@whvison.cn
-                      </a>
-                    </div>
-                    <div className="flex items-start">
-                      <BsGeoAlt className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
-                      <span>
-                        Room A404, Building 2, Huifeng Corporate Headquarters,
-                        Qiaokou District, Wuhan City, Hubei Province, China
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </aside>
-
-            {/* Main Content */}
-            <div className="lg:w-3/4">
-              <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  Our Products
-                </h1>
-                <p className="text-gray-600">
-                  Browse our extensive collection of military and tactical
-                  equipment. With over 15 years of experience, we specialize in
-                  high-quality military uniforms, tactical gear, and customized
-                  solutions.
-                </p>
+          ) : (
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Mobile Filter Toggle */}
+              <div className="lg:hidden mb-4">
+                <button
+                  onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                  className="w-full flex items-center justify-between bg-white p-4 rounded-lg shadow-sm"
+                >
+                  <span className="font-medium flex items-center">
+                    <BsFilter className="w-5 h-5 mr-2" /> Filters
+                  </span>
+                  <BsChevronDown
+                    className={`w-5 h-5 transition-transform ${
+                      mobileFiltersOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
               </div>
 
-              {/* Products Grid */}
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              {/* Sidebar */}
+              <aside
+                className={`lg:w-1/4 ${
+                  mobileFiltersOpen ? "block" : "hidden lg:block"
+                }`}
               >
-                {currentProducts.map((product) => (
-                  <motion.div
-                    key={product.id}
-                    variants={itemVariants}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
-                  >
-                    <Link to={product.url} className="block">
-                      <div className="relative w-full pb-[100%] overflow-hidden">
-                        <motion.img
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ duration: 0.4 }}
-                          src={product.image || "/placeholder.jpg"}
-                          alt={product.name}
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 text-gray-900 overflow-hidden text-ellipsis line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <p className="text-gray-600 text-sm mb-4 overflow-hidden text-ellipsis line-clamp-3">
-                          {product.description}
-                        </p>
-                        <div className="flex justify-between items-start gap-2 flex-col">
-                          <span className="text-xs text-gray-500">
-                            {product.subcategory}
-                          </span>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="flex items-center text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
+                <div className="sticky top-8 space-y-6">
+                  {/* Search */}
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search products..."
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                        value={searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          if (e.target.value) {
+                            setSearchParams({ search: e.target.value });
+                          } else {
+                            setSearchParams({});
+                          }
+                        }}
+                      />
+                      <BsSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                    </div>
+                  </div>
+
+                  {/* Categories */}
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
+                      Categories
+                    </h2>
+                    <ul className="space-y-1">
+                      {categories.map((category) => (
+                        <li key={category.id} className="py-1">
+                          <div
+                            className="flex items-center justify-between cursor-pointer hover:text-indigo-600 transition-colors"
+                            onClick={() => toggleCategory(category.name)}
                           >
-                            <span>Add to Inquiry</span>
-                            <BsCart className="ml-1 h-4 w-4" />
-                          </motion.button>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
+                            <span
+                              className={`font-medium ${
+                                categoryQuery === category.name
+                                  ? "text-indigo-600"
+                                  : ""
+                              }`}
+                            >
+                              {category.name}
+                            </span>
+                            {category.subcategories.length > 0 &&
+                              (activeCategory === category.name ? (
+                                <BsChevronDown className="h-4 w-4" />
+                              ) : (
+                                <BsChevronRight className="h-4 w-4" />
+                              ))}
+                          </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-8 flex justify-center">
-                  <nav className="flex items-center space-x-1">
-                    <button
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      className={`px-3 py-1 rounded-md ${
-                        currentPage === 1
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      First
-                    </button>
+                          {activeCategory === category.name &&
+                            category.subcategories.length > 0 && (
+                              <ul className="ml-4 mt-1 space-y-1">
+                                {category.subcategories.map(
+                                  (subcategory, index) => (
+                                    <li key={index} className="py-1">
+                                      <Link
+                                        to={`/products?category=${encodeURIComponent(
+                                          category.name
+                                        )}&subcategory=${encodeURIComponent(
+                                          subcategory
+                                        )}`}
+                                        className={`text-gray-600 hover:text-indigo-600 transition-colors ${
+                                          categoryQuery === category.name &&
+                                          subCategoryQuery === subcategory
+                                            ? "text-indigo-600 font-medium"
+                                            : ""
+                                        }`}
+                                      >
+                                        {subcategory}
+                                      </Link>
+                                    </li>
+                                  )
+                                )}
+                              </ul>
+                            )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      // Show pages around current page
-                      let pageNum = i + 1;
-                      if (totalPages > 5) {
-                        if (currentPage > 3) {
-                          pageNum = currentPage - 3 + i;
-                        }
-                        if (pageNum > totalPages) {
-                          pageNum = totalPages - (4 - i);
-                        }
-                      }
-
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-1 rounded-md ${
-                            currentPage === pageNum
-                              ? "bg-indigo-600 text-white"
-                              : "text-gray-700 hover:bg-gray-100"
-                          }`}
+                  {/* Latest Products */}
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
+                      Latest Products
+                    </h2>
+                    <div className="grid grid-cols-2 gap-2">
+                      {latestProducts.map((product) => (
+                        <Link
+                          key={product.id}
+                          to={product.url}
+                          className="block group"
                         >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
+                          <div className="relative w-full pb-[100%] overflow-hidden rounded-md">
+                            <img
+                              src={product.image || "/placeholder.jpg"}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
 
-                    <button
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
-                      className={`px-3 py-1 rounded-md ${
-                        currentPage === totalPages
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      Last
-                    </button>
-                  </nav>
+                  {/* Contact Us */}
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
+                      Contact Us
+                    </h2>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start">
+                        <BsTelephone className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
+                        <span>+8613377883692</span>
+                      </div>
+                      <div className="flex items-start">
+                        <BsEnvelope className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
+                        <a
+                          href="mailto:sara@whvison.cn"
+                          className="text-indigo-600 hover:underline"
+                        >
+                          sara@whvison.cn
+                        </a>
+                      </div>
+                      <div className="flex items-start">
+                        <BsGeoAlt className="w-4 h-4 mt-1 mr-2 text-indigo-600 flex-shrink-0" />
+                        <span>
+                          Room A404, Building 2, Huifeng Corporate Headquarters,
+                          Qiaokou District, Wuhan City, Hubei Province, China
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              )}
+              </aside>
+
+              {/* Main Content */}
+              <div className="lg:w-3/4">
+                <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Our Products
+                  </h1>
+                  <p className="text-gray-600">
+                    Browse our extensive collection of military and tactical
+                    equipment. With over 15 years of experience, we specialize
+                    in high-quality military uniforms, tactical gear, and
+                    customized solutions.
+                  </p>
+                </div>
+
+                {/* Products Grid */}
+                {isFilterLoading ? (
+                  <LoadingSpinner />
+                ) : filteredProducts.length === 0 ? (
+                  <NoItemsFound />
+                ) : (
+                  <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  >
+                    {currentProducts.map((product) => (
+                      <motion.div
+                        key={product.id}
+                        variants={itemVariants}
+                        className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                      >
+                        <Link to={product.url} className="block">
+                          <div className="relative w-full pb-[100%] overflow-hidden">
+                            <motion.img
+                              whileHover={{ scale: 1.05 }}
+                              transition={{ duration: 0.4 }}
+                              src={product.image || "/placeholder.jpg"}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="p-4">
+                            <h3 className="font-semibold text-lg mb-2 text-gray-900 overflow-hidden text-ellipsis line-clamp-2">
+                              {product.name}
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-4 overflow-hidden text-ellipsis line-clamp-3">
+                              {product.description}
+                            </p>
+                            <div className="flex justify-between items-start gap-2 flex-col">
+                              <span className="text-xs text-gray-500">
+                                {product.subcategory}
+                              </span>
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="flex items-center text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
+                              >
+                                <span>Add to Inquiry</span>
+                                <BsCart className="ml-1 h-4 w-4" />
+                              </motion.button>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {/* Pagination */}
+                {renderPagination()}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </DefaultLayout>
