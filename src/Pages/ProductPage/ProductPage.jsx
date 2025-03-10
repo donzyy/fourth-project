@@ -62,8 +62,9 @@ export default function ProductPage() {
           .filter(
             (p) =>
               p.slug !== foundProduct.slug && // Exclude current product
-              (p.category === foundProduct.category ||
-                p.subcategory === foundProduct.subcategory)
+              (p.categories[0].name === foundProduct.categories[0].name ||
+                p.categories[0].subcategories[0].name ===
+                  foundProduct.categories[0].subcategories[0].name)
           )
           .slice(0, 4); // Limit to 4 items
 
@@ -763,7 +764,7 @@ export default function ProductPage() {
                         {relatedProducts.map((item, index) => (
                           <Link
                             key={index}
-                            to={`/products/${item.slug}`}
+                            to={`/product/${item.slug}`}
                             className="group"
                           >
                             <div className="bg-gray-100 rounded-lg overflow-hidden mb-3 aspect-square">
