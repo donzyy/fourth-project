@@ -9,7 +9,7 @@ import Data from "../../data";
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState(Data.categories);
-  //const [products, setProducts] = useState(Data.products);
+  const [products, setProducts] = useState(Data.products);
   const [activeCategory, setActiveCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,107 +62,6 @@ function Products() {
   useEffect(() => {
     setCurrentPage(1);
   }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
-
-  const products = [
-    {
-      id: 1,
-      name: "ACU Camo Military Uniforms",
-      image:
-        "https://www.corhunter-garment.com/uploads/202337095/small/acu-military-uniform7366b4a7-b5f9-4a14-bc6d-3b09569c915d.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "ACU uniform",
-      description:
-        "Customization: Min. Order: 500 Sets. Material: 65% Polyester 35% Cotton. Feature: Ripstop.",
-      url: "/product/acu-camo-military-uniforms",
-    },
-    {
-      id: 2,
-      name: "BDU Military Uniform",
-      image:
-        "https://www.corhunter-garment.com/uploads/202237095/small/bdu-military-uniform58106687049.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "BDU uniform",
-      description:
-        "65% polyester and 35% cotton, plaid camouflage, light, durable, breathable, protective",
-      url: "/product/bdu-military-uniform",
-    },
-    {
-      id: 3,
-      name: "Frog Suit G2 Military Dress Uniforms",
-      image:
-        "https://www.corhunter-garment.com/uploads/202237095/small/frog-suit-g2-military-dress-uniforms21056765128.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "Frog Suit",
-      description:
-        "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Anti-Static.",
-      url: "/product/frog-suit-g2-military-dress-uniforms",
-    },
-    {
-      id: 4,
-      name: "ACU Camouflage Combat Uniforms",
-      image:
-        "https://www.corhunter-garment.com/uploads/202337095/small/acu-camouflage-combat-uniforms-tc65-35-fabric78a70e99-1fdf-42ea-b456-15c85fdb6521.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "ACU uniform",
-      description:
-        "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Breathable.",
-      url: "/product/acu-camouflage-combat-uniforms",
-    },
-    {
-      id: 5,
-      name: "ACU Digital Ocean Camouflage Uniforms",
-      image:
-        "https://www.corhunter-garment.com/uploads/202337095/small/acu-digital-ocean-camouflage-uniforms6ac2c9a1-81f8-4273-b6c2-e1e3d8727d54.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "ACU uniform",
-      description:
-        "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Breathability.",
-      url: "/product/acu-digital-ocean-camouflage-uniforms",
-    },
-    {
-      id: 6,
-      name: "Custom Black Python Camouflage ACU Uniform",
-      image:
-        "https://www.corhunter-garment.com/uploads/202337095/small/custom-black-python-camouflage-acu-uniform88317719-8e1b-407d-8286-d5038cdcb922.jpg",
-      subcategory: "ACU uniform",
-      description:
-        "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Durable.",
-      url: "/product/custom-black-python-camouflage-acu-uniform",
-    },
-    {
-      id: 7,
-      name: "In Stock ACU Uniform Digital Jungle Camouflage",
-      image:
-        "https://www.corhunter-garment.com/uploads/202337095/small/in-stock-acu-uniform-digital-jungle272109db-3d8f-4bdd-adf5-38da06afd89c.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "ACU uniform",
-      description:
-        "Customization: Min. Order: 1000 Sets. Material: 65% Polyester 35% Cotton. Feature: Waterproof.",
-      url: "/product/in-stock-acu-uniform-digital-jungle",
-    },
-    {
-      id: 8,
-      name: "G3 Outdoor Training Frog Suit Physical Fitness Uniform",
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/small/g3-outdoor-training-frog-suit-physicalfb262.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "Frog Suit",
-      description:
-        "Camouflage tactical frog suit, made of elastic fabric, breathable and skin-friendly, soft and comfortable.",
-      url: "/product/g3-outdoor-training-frog-suit-physical",
-    },
-    {
-      id: 9,
-      name: "Python Pattern Camouflage Long-sleeved Soldier Outdoor Frog Uniform",
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/small/desert-python-pattern-camouflage-long-sleeved5c8de.jpg",
-      category: "Military Combat Uniform",
-      subcategory: "Frog Suit",
-      description:
-        "Camouflage tactical frog suit, made of elastic fabric, breathable and skin-friendly, soft and comfortable.",
-      url: "/product/desert-python-pattern-camouflage-long-sleeved",
-    },
-  ];
 
   // Helper function to normalize text for searching
   const normalizeText = (text) => {
