@@ -296,6 +296,12 @@ function Header() {
                 Home
               </Link>
 
+              {/* Mega Menu Component - Desktop */}
+              <MegaMenu
+                categories={categories}
+                featuredProducts={featuredProducts}
+                scrolled={scrolled}
+              />
               {navigation.pages.slice(1).map((page) =>
                 page.hasSubmenu ? (
                   <Popover key={page.name} className="relative">
@@ -358,12 +364,6 @@ function Header() {
                   </Link>
                 )
               )}
-              {/* Mega Menu Component - Desktop */}
-              <MegaMenu
-                categories={categories}
-                featuredProducts={featuredProducts}
-                scrolled={scrolled}
-              />
             </nav>
 
             {/* Search and CTA */}
