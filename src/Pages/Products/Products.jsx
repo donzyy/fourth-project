@@ -319,13 +319,13 @@ function Products() {
                     animate="visible"
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                   >
-                    {currentProducts.map((product) => (
+                    {currentProducts.map((product, index) => (
                       <motion.div
-                        key={product.id}
+                        key={index}
                         variants={itemVariants}
                         className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                       >
-                        <Link to={product.url} className="block">
+                        <Link to={`/product/${product.slug}`} className="block">
                           <div className="relative w-full pb-[100%] overflow-hidden">
                             <motion.img
                               whileHover={{ scale: 1.05 }}
