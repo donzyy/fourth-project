@@ -74,6 +74,7 @@ export default function ProductPage() {
     };
 
     fetchProduct();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [productSlug, products]);
 
   // Loading spinner component
@@ -323,24 +324,45 @@ export default function ProductPage() {
                           )}
 
                         {/* Category and Subcategory */}
-                        {(product.category || product.subcategory) && (
-                          <div className="mb-6">
-                            {product.category && (
-                              <p className="text-gray-700">
-                                <span className="font-medium">Category:</span>{" "}
-                                {product.category}
-                              </p>
-                            )}
-                            {product.subcategory && (
-                              <p className="text-gray-700">
-                                <span className="font-medium">
-                                  Subcategory:
-                                </span>{" "}
-                                {product.subcategory}
-                              </p>
-                            )}
-                          </div>
-                        )}
+                        {product.categories &&
+                          product.categories.length > 0 && (
+                            <div className="mb-6 space-y-2">
+                              <div className="flex flex-col gap-2">
+                                {product.categories[0].name && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-semibold text-gray-600">
+                                      Category:
+                                    </span>
+                                    <Link
+                                      to={`/products?category=${product.categories[0].name}`}
+                                      className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800 cursor-pointer"
+                                    >
+                                      {product.categories[0].name}
+                                    </Link>
+                                  </div>
+                                )}
+
+                                {product.categories[0].subcategories &&
+                                  product.categories[0].subcategories.length >
+                                    0 && (
+                                    <div className="flex items-center gap-2 mt-2 md:mt-0">
+                                      <span className="text-sm font-semibold text-gray-600">
+                                        Subcategory:
+                                      </span>
+                                      <Link
+                                        to={`/products?category=${product.categories[0].name}&subcategory=${product.categories[0].subcategories[0].name}`}
+                                        className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800 cursor-pointer"
+                                      >
+                                        {
+                                          product.categories[0].subcategories[0]
+                                            .name
+                                        }
+                                      </Link>
+                                    </div>
+                                  )}
+                              </div>
+                            </div>
+                          )}
 
                         {/* Social Share */}
                         <div className="flex space-x-3 mb-6">

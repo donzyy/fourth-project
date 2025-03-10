@@ -74,7 +74,7 @@ function Products() {
     if (searchQuery) {
       const normalizedQuery = normalizeText(searchQuery);
       const normalizedName = normalizeText(product.name);
-      const normalizedDescription = normalizeText(product.description);
+      const normalizedDescription = normalizeText(product.details.description);
 
       if (
         !normalizedName.includes(normalizedQuery) &&
@@ -87,7 +87,7 @@ function Products() {
     // Then filter by category if it exists
     if (categoryQuery) {
       const normalizedCategoryQuery = normalizeText(categoryQuery);
-      const normalizedCategory = normalizeText(product.category);
+      const normalizedCategory = normalizeText(product.categories[0].name);
 
       if (normalizedCategory !== normalizedCategoryQuery) {
         return false;
@@ -97,7 +97,9 @@ function Products() {
     // Then filter by subcategory if it exists
     if (subCategoryQuery) {
       const normalizedSubCategoryQuery = normalizeText(subCategoryQuery);
-      const normalizedSubCategory = normalizeText(product.subcategory);
+      const normalizedSubCategory = normalizeText(
+        product.categories[0].subcategories[0].name
+      );
 
       if (normalizedSubCategory !== normalizedSubCategoryQuery) {
         return false;
@@ -340,11 +342,13 @@ function Products() {
                               {product.name}
                             </h3>
                             <p className="text-gray-600 text-sm mb-4 overflow-hidden text-ellipsis line-clamp-3">
-                              {product.description}
+                              {product.details.description}
                             </p>
                             <div className="flex justify-between items-start gap-2 flex-col">
                               <span className="text-xs text-gray-500">
-                                {product.subcategory}
+                                {product.categories[0].name +
+                                  " | " +
+                                  product.categories[0].subcategories[0].name}
                               </span>
                               <motion.button
                                 whileHover={{ scale: 1.05 }}

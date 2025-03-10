@@ -177,8 +177,9 @@ const MegaMenu = ({
 
                         {category.subcategories.length > 0 && (
                           <ul className="mt-2 space-y-1">
-                            {category.subcategories.map(
-                              (subcategory, index) => (
+                            {category.subcategories
+                              .slice(0, 5)
+                              .map((subcategory, index) => (
                                 <li key={index}>
                                   <Link
                                     to={`/products?category=${encodeURIComponent(
@@ -191,8 +192,7 @@ const MegaMenu = ({
                                     {subcategory}
                                   </Link>
                                 </li>
-                              )
-                            )}
+                              ))}
                           </ul>
                         )}
                       </div>

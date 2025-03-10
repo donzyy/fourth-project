@@ -11,7 +11,8 @@
       "Bulletproof vest / Equipment",
       "Military Bags",
       "Protective Knee Cap"
-    ]
+    ],
+    "image": "https://www.corhunter-garment.com/uploads/202337095/small/acu-military-uniform7366b4a7-b5f9-4a14-bc6d-3b09569c915d.jpg"
   },
   {
     "id": 2,
@@ -23,12 +24,14 @@
       "Bulletproof vest / Equipment",
       "Reflective Clothing",
       "Protective Knee Cap"
-    ]
+    ],
+    "image": "https://www.corhunter-garment.com/uploads/37095/list/n20240912162130eb636.jpg"
   },
   {
     "id": 3,
     "name": "School Uniform",
-    "subcategories": ["High School", "College", "Polo T-shirts"]
+    "subcategories": ["High School", "College", "Polo T-shirts"],
+    "image": "https://www.corhunter-garment.com/uploads/37095/small/pleated-skirt-vest-top-kids-school-clothingad410.jpg"
   },
   {
     "id": 4,
@@ -37,12 +40,14 @@
       "Security Officer Uniforms",
       "Sequence Tactical Jacket",
       "Reflective Clothing"
-    ]
+    ],
+    "image": "https://www.corhunter-garment.com/uploads/37095/list/n202409121505265e3c2.jpg"
   },
   {
     "id": 5,
     "name": "Tactical Wear/Gear",
-    "subcategories": ["Tactical Glasses", "Tactical Gloves", "Tactical Belts"]
+    "subcategories": ["Tactical Glasses", "Tactical Gloves", "Tactical Belts"],
+    "image": "https://www.corhunter-garment.com/uploads/37095/list/n20240912162647415c8.jpg"
   },
   {
     "id": 6,
@@ -53,6 +58,7 @@
       "Hotel Uniforms",
       "Aviation Uniforms",
       "Workwear Shirts"
-    ]
+    ],
+    "image": "https://www.corhunter-garment.com/uploads/37095/list/n20240912152837f463f.jpg"
   }
 ]

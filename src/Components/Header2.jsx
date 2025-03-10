@@ -21,6 +21,7 @@ import {
   PopoverPanel,
 } from "@headlessui/react";
 import MegaMenu from "./MegaMenu";
+import Data from "../data";
 
 function Header() {
   const [open, setOpen] = useState(false);
@@ -51,84 +52,7 @@ function Header() {
     console.log("Searching for:", searchQuery);
   };
 
-  const categories = [
-    {
-      id: 1,
-      name: "Military Combat Uniform",
-      subcategories: [
-        "ACU uniform",
-        "BDU uniform",
-        "Frog Suit",
-        "Military Jacket",
-      ],
-      image:
-        "https://www.corhunter-garment.com/uploads/202337095/small/acu-military-uniform7366b4a7-b5f9-4a14-bc6d-3b09569c915d.jpg",
-    },
-    {
-      id: 2,
-      name: "Tactical Uniform",
-      subcategories: [
-        "Tactical Suit",
-        "Tactical Shirt",
-        "Military Tactical Pants",
-        "Camouflage Clothing",
-      ],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n20240912162130eb636.jpg",
-    },
-    {
-      id: 3,
-      name: "Security Uniform",
-      subcategories: [
-        "Security Officer Uniform",
-        "Security Tactical jacket",
-        "Reflective Clothing",
-      ],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n20240912150107ba023.jpg",
-    },
-    {
-      id: 4,
-      name: "Military Beret & Cap & Hat",
-      subcategories: ["Beret", "Cap", "Hat"],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n202409121505265e3c2.jpg",
-    },
-    {
-      id: 5,
-      name: "Military Bags",
-      subcategories: ["Backpack"],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n20240912152719f4274.jpg",
-    },
-    {
-      id: 6,
-      name: "Tactical Boots",
-      subcategories: [],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n20240912152837f463f.jpg",
-    },
-    {
-      id: 7,
-      name: "Bulletproof Equipment",
-      subcategories: ["Bulletproof Helmet", "Bulletproof Vest"],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n2024091215344761747.jpg",
-    },
-    {
-      id: 8,
-      name: "Tactical Gears",
-      subcategories: [
-        "Tactical Glasses",
-        "Tactical Gloves",
-        "Tactical Belt",
-        "Protective Gear Kneepad",
-      ],
-      image:
-        "https://www.corhunter-garment.com/uploads/37095/list/n20240912162647415c8.jpg",
-    },
-  ];
-
+  const categories = Data.categories;
   const featuredProducts = [
     {
       name: "ACU Camo Military Uniforms",

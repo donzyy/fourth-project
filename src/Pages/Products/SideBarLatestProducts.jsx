@@ -20,7 +20,11 @@ function SideBarLatestProducts({ latestProducts = [] }) {
       </h2>
       <div className="grid grid-cols-2 gap-2">
         {latestProducts.map((product, id) => (
-          <Link key={id} to={product.url} className="block group">
+          <Link
+            key={id}
+            to={`/product/${product.slug}`}
+            className="block group"
+          >
             <div className="relative w-full pb-[100%] overflow-hidden rounded-md">
               <img
                 src={product.image || "/placeholder.jpg"}
