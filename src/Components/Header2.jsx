@@ -56,21 +56,21 @@ function Header() {
   const featuredProducts = [
     {
       name: "ACU Camo Military Uniforms",
-      href: "/products/acu-camo-military-uniforms",
+      href: "/products/acu-camo-military-uniform",
       imageSrc:
         "https://www.corhunter-garment.com/uploads/202337095/small/acu-military-uniform7366b4a7-b5f9-4a14-bc6d-3b09569c915d.jpg",
       imageAlt: "ACU Camo Military Uniforms",
     },
     {
       name: "Frog Suit G2 Military Dress Uniforms",
-      href: "/products/frog-suit-g2-military-dress-uniforms",
+      href: "/products/frog-suit-g2-military-dress-uniform",
       imageSrc:
         "https://www.corhunter-garment.com/uploads/202237095/small/frog-suit-g2-military-dress-uniforms21056765128.jpg",
       imageAlt: "Frog Suit G2 Military Dress Uniforms",
     },
     {
       name: "Tactical Boots",
-      href: "/products/tactical-boots",
+      href: "/products/tactical-boot",
       imageSrc:
         "https://www.corhunter-garment.com/uploads/37095/list/n20240912162647415c8.jpg",
       imageAlt: "Tactical Boots",
