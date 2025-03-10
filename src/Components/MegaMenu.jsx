@@ -151,16 +151,18 @@ const MegaMenu = ({
                       {/* Column 1: Category Image */}
                       <div className="flex-shrink-0">
                         <div className="h-full w-full overflow-hidden rounded-md border border-gray-200 shadow-sm">
-                          <img
-                            src={
-                              category.image ||
-                              "/placeholder.svg?height=40&width=40" ||
-                              "/placeholder.svg" ||
-                              "/placeholder.svg"
-                            }
-                            alt={category.name}
-                            className="h-full w-full object-cover object-center"
-                          />
+                          <Link to={`/products?category=${category.name}`}>
+                            <img
+                              src={
+                                category.image ||
+                                "/placeholder.svg?height=40&width=40" ||
+                                "/placeholder.svg" ||
+                                "/placeholder.svg"
+                              }
+                              alt={category.name}
+                              className="h-full w-full object-cover object-center"
+                            />
+                          </Link>
                         </div>
                       </div>
 
@@ -177,8 +179,9 @@ const MegaMenu = ({
 
                         {category.subcategories.length > 0 && (
                           <ul className="mt-2 space-y-1">
-                            {category.subcategories.map(
-                              (subcategory, index) => (
+                            {category.subcategories
+                              .slice(0, 5)
+                              .map((subcategory, index) => (
                                 <li key={index}>
                                   <Link
                                     to={`/products?category=${encodeURIComponent(
@@ -191,8 +194,7 @@ const MegaMenu = ({
                                     {subcategory}
                                   </Link>
                                 </li>
-                              )
-                            )}
+                              ))}
                           </ul>
                         )}
                       </div>
