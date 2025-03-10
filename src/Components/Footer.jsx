@@ -67,7 +67,7 @@ function Footer() {
                 <li className="mb-5">
                   <Link
                     className="text-white hover:text-gray-200 font-medium leading-relaxed"
-                    to={""}
+                    to={"/products"}
                   >
                     Products
                   </Link>
