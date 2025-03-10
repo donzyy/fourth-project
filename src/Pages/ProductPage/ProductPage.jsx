@@ -25,8 +25,8 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [products, setProducts] = useState(Data.products || []);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("");
   const latestProducts = products.slice(0, 4);
-  const activeCategory = null;
 
   const [activeImage, setActiveImage] = useState(0);
   const thumbnailsRef = useRef(null);
@@ -196,6 +196,14 @@ export default function ProductPage() {
     }
   };
 
+  const toggleCategory = (category) => {
+    if (activeCategory === category) {
+      setActiveCategory(null);
+    } else {
+      setActiveCategory(category);
+    }
+  };
+
   return (
     <DefaultLayout>
       <div className="bg-gray-50 min-h-screen">
@@ -206,6 +214,7 @@ export default function ProductPage() {
               showSearch={false}
               categories={categories}
               activeCategory={activeCategory}
+              toggleCategory={toggleCategory}
               latestProducts={latestProducts}
               mobileFiltersOpen={mobileFiltersOpen}
               setMobileFiltersOpen={setMobileFiltersOpen}
