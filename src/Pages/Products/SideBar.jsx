@@ -63,9 +63,7 @@ const SearchComponent = ({
   }, []);
 
   return (
-    <div
-      className={showSearch ? "bg-white p-4 rounded-lg shadow-sm" : "hidden"}
-    >
+    <div className="bg-white p-4 rounded-lg shadow-sm">
       <div className="relative">
         <input
           ref={inputRef}
@@ -165,13 +163,14 @@ function SideBar({
       {/* Desktop sidebar */}
       <aside className="hidden lg:block lg:w-1/4">
         <div className="sticky top-8 space-y-6">
-          {/* Search */}
-          <SearchComponent
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            setSearchParams={setSearchParams}
-            showSearch={showSearch}
-          />
+          {showSearch && (
+            <SearchComponent
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              setSearchParams={setSearchParams}
+              showSearch={showSearch}
+            />
+          )}
 
           {/* Categories */}
           <SideBarCategories
