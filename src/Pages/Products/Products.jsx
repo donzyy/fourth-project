@@ -17,6 +17,58 @@ function Products() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
 
+  // Handle strict category toggle with page refresh
+  const handleCategoryToggle = (category) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    // Remove search when a category is selected
+    newParams.delete("search");
+    setSearchQuery("");
+
+    if (searchParams.get("category") === category) {
+      // Clear category and subcategory if the same category is clicked
+      newParams.delete("category");
+      newParams.delete("subcategory");
+    } else {
+      newParams.set("category", category);
+      newParams.delete("subcategory"); // Ensure subcategory resets when changing category
+    }
+
+    newParams.set("page", "1"); // Always reset page
+    setSearchParams(newParams);
+  };
+
+  const handleSearchSubmit = (searchValue) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    if (searchValue) {
+      newParams.set("search", searchValue);
+    } else {
+      newParams.delete("search");
+    }
+
+    newParams.set("page", "1");
+    setSearchParams(newParams);
+  };
+
+  // Handle strict subcategory toggle with page refresh
+  const handleSubCategoryToggle = (subCategory) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    // Remove search query when subcategory is changed
+    newParams.delete("search");
+    setSearchQuery("");
+
+    if (searchParams.get("subcategory") === subCategory) {
+      newParams.delete("subcategory");
+    } else {
+      newParams.set("subcategory", subCategory);
+    }
+
+    newParams.set("page", "1"); // Always reset page
+    setSearchParams(newParams);
+  };
+
   const toggleCategory = (category) => {
     if (activeCategory === category) {
       setActiveCategory(null);
@@ -27,8 +79,20 @@ function Products() {
 
   const categoryQuery = searchParams.get("category");
   const idQuery = searchParams.get("id");
-  const subCategoryQuery = searchParams.get("subCategory");
+  const subCategoryQuery = searchParams.get("subcategory"); // Fixed parameter name
   const nameQuery = searchParams.get("name");
+
+  // Monitor URL changes to trigger the loader
+  useEffect(() => {
+    setIsFilterLoading(true);
+
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setIsFilterLoading(false);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [searchParams]);
 
   // Initial page load effect
   useEffect(() => {
@@ -41,23 +105,10 @@ function Products() {
   }, []);
 
   useEffect(() => {
-    if (
-      categoryQuery ||
-      subCategoryQuery ||
-      idQuery ||
-      nameQuery ||
-      searchQuery
-    ) {
-      setIsFilterLoading(true);
-
-      // Simulate loading delay, temp till db fetch is added
-      const timer = setTimeout(() => {
-        setIsFilterLoading(false);
-      }, 800);
-
-      return () => clearTimeout(timer);
+    if (!searchParams.get("search")) {
+      setSearchQuery("");
     }
-  }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
+  }, [searchParams]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -74,11 +125,17 @@ function Products() {
     if (searchQuery) {
       const normalizedQuery = normalizeText(searchQuery);
       const normalizedName = normalizeText(product.name);
+      const normalizedCategory = normalizeText(product.categories[0].name);
+      const normalizedSubCategory = normalizeText(
+        product.categories[0].subcategories[0].name
+      );
       const normalizedDescription = normalizeText(product.details.description);
 
       if (
         !normalizedName.includes(normalizedQuery) &&
-        !normalizedDescription.includes(normalizedQuery)
+        !normalizedDescription.includes(normalizedQuery) &&
+        !normalizedCategory.includes(normalizedQuery) &&
+        !normalizedSubCategory.includes(normalizedQuery)
       ) {
         return false;
       }
@@ -97,11 +154,24 @@ function Products() {
     // Then filter by subcategory if it exists
     if (subCategoryQuery) {
       const normalizedSubCategoryQuery = normalizeText(subCategoryQuery);
-      const normalizedSubCategory = normalizeText(
-        product.categories[0].subcategories[0].name
+
+      // Check if the product has subcategories
+      if (
+        !product.categories[0].subcategories ||
+        product.categories[0].subcategories.length === 0
+      ) {
+        return false;
+      }
+
+      // Check if any subcategory matches
+      const matches = product.categories[0].subcategories.some(
+        (subcategory) => {
+          const normalizedSubCategory = normalizeText(subcategory.name);
+          return normalizedSubCategory === normalizedSubCategoryQuery;
+        }
       );
 
-      if (normalizedSubCategory !== normalizedSubCategoryQuery) {
+      if (!matches) {
         return false;
       }
     }
@@ -153,7 +223,10 @@ function Products() {
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    setIsFilterLoading(true); // Show loader immediately when changing page
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("page", page.toString());
+    setSearchParams(newParams);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -293,6 +366,9 @@ function Products() {
                 latestProducts={latestProducts}
                 mobileFiltersOpen={mobileFiltersOpen}
                 setMobileFiltersOpen={setMobileFiltersOpen}
+                handleCategoryToggle={handleCategoryToggle}
+                handleSubCategoryToggle={handleSubCategoryToggle}
+                handleSearchSubmit={handleSearchSubmit}
               />
 
               {/* Main Content */}
@@ -348,7 +424,11 @@ function Products() {
                               <span className="text-xs text-gray-500">
                                 {product.categories[0].name +
                                   " | " +
-                                  product.categories[0].subcategories[0].name}
+                                  (product.categories[0].subcategories &&
+                                  product.categories[0].subcategories[0]
+                                    ? product.categories[0].subcategories[0]
+                                        .name
+                                    : "No subcategory")}
                               </span>
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
