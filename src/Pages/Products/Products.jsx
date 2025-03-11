@@ -11,30 +11,36 @@ function Products() {
   const [categories, setCategories] = useState(Data.categories);
   const [products, setProducts] = useState(Data.products);
   const [activeCategory, setActiveCategory] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(() => {
+    return searchParams.get("search") || "";
+  });
+  const [currentPage, setCurrentPage] = useState(() => {
+    const pageFromUrl = searchParams.get("page");
+    return pageFromUrl ? parseInt(pageFromUrl) : 1;
+  });
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
 
-  // Handle strict category toggle with page refresh
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   const handleCategoryToggle = (category) => {
     const newParams = new URLSearchParams(searchParams);
-
-    // Remove search when a category is selected
     newParams.delete("search");
     setSearchQuery("");
 
     if (searchParams.get("category") === category) {
-      // Clear category and subcategory if the same category is clicked
       newParams.delete("category");
       newParams.delete("subcategory");
     } else {
       newParams.set("category", category);
-      newParams.delete("subcategory"); // Ensure subcategory resets when changing category
+      newParams.delete("subcategory");
     }
 
-    newParams.set("page", "1"); // Always reset page
+    newParams.set("page", "1");
+    setCurrentPage(1);
     setSearchParams(newParams);
   };
 
@@ -48,14 +54,13 @@ function Products() {
     }
 
     newParams.set("page", "1");
+    setCurrentPage(1);
     setSearchParams(newParams);
   };
 
-  // Handle strict subcategory toggle with page refresh
   const handleSubCategoryToggle = (subCategory) => {
     const newParams = new URLSearchParams(searchParams);
 
-    // Remove search query when subcategory is changed
     newParams.delete("search");
     setSearchQuery("");
 
@@ -65,7 +70,8 @@ function Products() {
       newParams.set("subcategory", subCategory);
     }
 
-    newParams.set("page", "1"); // Always reset page
+    newParams.set("page", "1");
+    setCurrentPage(1);
     setSearchParams(newParams);
   };
 
@@ -79,14 +85,12 @@ function Products() {
 
   const categoryQuery = searchParams.get("category");
   const idQuery = searchParams.get("id");
-  const subCategoryQuery = searchParams.get("subcategory"); // Fixed parameter name
+  const subCategoryQuery = searchParams.get("subcategory");
   const nameQuery = searchParams.get("name");
 
-  // Monitor URL changes to trigger the loader
   useEffect(() => {
     setIsFilterLoading(true);
 
-    // Simulate loading delay
     const timer = setTimeout(() => {
       setIsFilterLoading(false);
     }, 800);
@@ -94,9 +98,7 @@ function Products() {
     return () => clearTimeout(timer);
   }, [searchParams]);
 
-  // Initial page load effect
   useEffect(() => {
-    // Simulate initial page load
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -105,23 +107,25 @@ function Products() {
   }, []);
 
   useEffect(() => {
-    if (!searchParams.get("search")) {
-      setSearchQuery("");
-    }
+    const searchFromUrl = searchParams.get("search");
+    setSearchQuery(searchFromUrl || "");
   }, [searchParams]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [categoryQuery, subCategoryQuery, idQuery, nameQuery, searchQuery]);
+    const pageFromUrl = searchParams.get("page");
+    if (pageFromUrl) {
+      setCurrentPage(parseInt(pageFromUrl));
+    } else {
+      setCurrentPage(1);
+    }
+  }, [searchParams]);
 
-  // Helper function to normalize text for searching
   const normalizeText = (text) => {
     if (!text) return "";
     return text.toLowerCase().replace(/[\s-]+/g, "");
   };
 
   const filteredProducts = products.filter((product) => {
-    // First filter by search query if it exists
     if (searchQuery) {
       const normalizedQuery = normalizeText(searchQuery);
       const normalizedName = normalizeText(product.name);
@@ -141,7 +145,6 @@ function Products() {
       }
     }
 
-    // Then filter by category if it exists
     if (categoryQuery) {
       const normalizedCategoryQuery = normalizeText(categoryQuery);
       const normalizedCategory = normalizeText(product.categories[0].name);
@@ -151,11 +154,9 @@ function Products() {
       }
     }
 
-    // Then filter by subcategory if it exists
     if (subCategoryQuery) {
       const normalizedSubCategoryQuery = normalizeText(subCategoryQuery);
 
-      // Check if the product has subcategories
       if (
         !product.categories[0].subcategories ||
         product.categories[0].subcategories.length === 0
@@ -163,7 +164,6 @@ function Products() {
         return false;
       }
 
-      // Check if any subcategory matches
       const matches = product.categories[0].subcategories.some(
         (subcategory) => {
           const normalizedSubCategory = normalizeText(subcategory.name);
@@ -176,12 +176,10 @@ function Products() {
       }
     }
 
-    // Then filter by id if it exists
     if (idQuery && product.id !== Number.parseInt(idQuery)) {
       return false;
     }
 
-    // Then filter by name if it exists
     if (nameQuery) {
       const normalizedNameQuery = normalizeText(nameQuery);
       const normalizedName = normalizeText(product.name);
@@ -223,20 +221,25 @@ function Products() {
   };
 
   const handlePageChange = (page) => {
-    setIsFilterLoading(true); // Show loader immediately when changing page
+    setIsFilterLoading(true);
     const newParams = new URLSearchParams(searchParams);
+
     newParams.set("page", page.toString());
+
     setSearchParams(newParams);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const renderPagination = () => {
     if (totalPages <= 1) return null;
 
+    const pageFromUrl = parseInt(searchParams.get("page") || "1");
+
     const pageNumbers = [];
     const maxPagesToShow = 5;
 
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let startPage = Math.max(1, pageFromUrl - Math.floor(maxPagesToShow / 2));
     let endPage = startPage + maxPagesToShow - 1;
 
     if (endPage > totalPages) {
@@ -253,9 +256,9 @@ function Products() {
         <nav className="flex items-center space-x-1">
           <button
             onClick={() => handlePageChange(1)}
-            disabled={currentPage === 1}
+            disabled={pageFromUrl === 1}
             className={`px-3 py-1 rounded-md ${
-              currentPage === 1
+              pageFromUrl === 1
                 ? "text-gray-400 cursor-not-allowed"
                 : "text-gray-700 hover:bg-gray-100"
             }`}
@@ -263,9 +266,9 @@ function Products() {
             First
           </button>
 
-          {currentPage > 1 && (
+          {pageFromUrl > 1 && (
             <button
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={() => handlePageChange(pageFromUrl - 1)}
               className="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100"
             >
               Prev
@@ -277,7 +280,7 @@ function Products() {
               key={number}
               onClick={() => handlePageChange(number)}
               className={`px-3 py-1 rounded-md ${
-                currentPage === number
+                pageFromUrl === number
                   ? "bg-indigo-600 text-white"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
@@ -286,9 +289,9 @@ function Products() {
             </button>
           ))}
 
-          {currentPage < totalPages && (
+          {pageFromUrl < totalPages && (
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={() => handlePageChange(pageFromUrl + 1)}
               className="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100"
             >
               Next
@@ -297,9 +300,9 @@ function Products() {
 
           <button
             onClick={() => handlePageChange(totalPages)}
-            disabled={currentPage === totalPages}
+            disabled={pageFromUrl === totalPages}
             className={`px-3 py-1 rounded-md ${
-              currentPage === totalPages
+              pageFromUrl === totalPages
                 ? "text-gray-400 cursor-not-allowed"
                 : "text-gray-700 hover:bg-gray-100"
             }`}
@@ -308,7 +311,7 @@ function Products() {
           </button>
         </nav>
         <div className="ml-4 text-sm text-gray-500 self-center">
-          Page {currentPage} of {totalPages}
+          Page {pageFromUrl} of {totalPages}
         </div>
       </div>
     );
