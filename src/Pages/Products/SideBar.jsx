@@ -1,7 +1,84 @@
+import { useState, useEffect, useRef } from "react";
 import { BsSearch, BsChevronDown, BsX, BsFilter } from "react-icons/bs";
 import SideBarLatestProducts from "./SideBarLatestProducts";
 import SideBarContactUs from "./SideBarContactUs";
 import SideBarCategories from "./SideBarCategories";
+
+const SearchComponent = ({
+  searchQuery,
+  setSearchQuery,
+  setSearchParams,
+  showSearch,
+}) => {
+  const [inputValue, setInputValue] = useState(searchQuery);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(inputValue);
+
+      if (inputValue) {
+        setSearchParams(new URLSearchParams({ search: inputValue }));
+      } else {
+        // Restore category & subcategory if search is cleared
+        setSearchParams((prevParams) => {
+          const newParams = new URLSearchParams();
+          if (prevParams.has("category"))
+            newParams.set("category", prevParams.get("category"));
+          if (prevParams.has("subcategory"))
+            newParams.set("subcategory", prevParams.get("subcategory"));
+          return newParams;
+        });
+      }
+    }, 300); // Adjust debounce time
+
+    return () => clearTimeout(handler);
+  }, [inputValue, setSearchQuery, setSearchParams]);
+
+  // Focus the input when the component mounts
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setInputValue("");
+    }
+  }, [searchQuery]);
+
+  // Handle clicks outside the input
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (inputRef.current && !inputRef.current.contains(event.target)) {
+        inputRef.current.blur(); // Blur the input if clicked outside
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="text"
+          name="search"
+          placeholder="Search products..."
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <BsSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+      </div>
+    </div>
+  );
+};
 
 function SideBar({
   searchQuery,
@@ -17,30 +94,6 @@ function SideBar({
   mobileFiltersOpen,
   setMobileFiltersOpen,
 }) {
-  const SearchComponent = () => (
-    <div
-      className={showSearch ? "bg-white p-4 rounded-lg shadow-sm" : "hidden"}
-    >
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="Search products..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            if (e.target.value) {
-              setSearchParams({ search: e.target.value });
-            } else {
-              setSearchParams({});
-            }
-          }}
-        />
-        <BsSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-      </div>
-    </div>
-  );
-
   const MobileToggleButton = () => (
     <div className="lg:hidden mb-4">
       <button
@@ -110,8 +163,14 @@ function SideBar({
       {/* Desktop sidebar */}
       <aside className="hidden lg:block lg:w-1/4">
         <div className="sticky top-8 space-y-6">
-          {/* Search */}
-          <SearchComponent />
+          {showSearch && (
+            <SearchComponent
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              setSearchParams={setSearchParams}
+              showSearch={showSearch}
+            />
+          )}
 
           {/* Categories */}
           <SideBarCategories

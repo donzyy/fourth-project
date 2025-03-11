@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import {
   BsChevronLeft,
@@ -16,12 +16,15 @@ import {
 import Data from "../../data";
 import SideBar from "../Products/SideBar";
 import DefaultLayout from "../../Layout/DefaultLayout";
+import { motion } from "framer-motion";
 
 export default function ProductPage() {
   const { productSlug } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState(Data.categories || []);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [product, setProduct] = useState(null);
   const [products, setProducts] = useState(Data.products || []);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -43,6 +46,18 @@ export default function ProductPage() {
   const imageRef = useRef(null);
   const zoomRef = useRef(null);
 
+  // Monitor URL changes to trigger the loader
+  useEffect(() => {
+    setIsFilterLoading(true);
+
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setIsFilterLoading(false);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [searchParams]);
+
   // Fetch product data and related products
   useEffect(() => {
     // Simulate API call
@@ -56,6 +71,11 @@ export default function ProductPage() {
 
       if (foundProduct) {
         setProduct(foundProduct);
+
+        // Set active category based on the product
+        if (foundProduct.categories && foundProduct.categories.length > 0) {
+          setActiveCategory(foundProduct.categories[0].name);
+        }
 
         // Filter related products by matching category or subcategory
         const filtered = products
@@ -77,6 +97,75 @@ export default function ProductPage() {
     fetchProduct();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [productSlug, products]);
+
+  // Handle category toggle
+  const toggleCategory = (category) => {
+    if (activeCategory === category) {
+      setActiveCategory(null);
+    } else {
+      setActiveCategory(category);
+    }
+  };
+
+  // Handle category selection with URL update
+  const handleCategoryToggle = (category) => {
+    setIsFilterLoading(true); // Show loader immediately when changing category
+    const newParams = new URLSearchParams(searchParams);
+
+    // If clicking the active category, clear it
+    if (categoryQuery === category) {
+      newParams.delete("category");
+      // Clear subcategory when category is cleared
+      newParams.delete("subcategory");
+    } else {
+      newParams.set("category", category);
+      // Clear subcategory when changing category
+      newParams.delete("subcategory");
+    }
+
+    // Update URL which will refresh the page
+    setSearchParams(newParams);
+  };
+
+  // Handle subcategory selection with URL update
+  const handleSubCategoryToggle = (subCategory) => {
+    setIsFilterLoading(true); // Show loader immediately when changing subcategory
+    const newParams = new URLSearchParams(searchParams);
+
+    // If clicking the active subcategory, clear it
+    if (subCategoryQuery === subCategory) {
+      newParams.delete("subcategory");
+    } else {
+      newParams.set("subcategory", subCategory);
+    }
+
+    // Update URL which will refresh the page
+    setSearchParams(newParams);
+  };
+
+  // Get query parameters
+  const categoryQuery = searchParams.get("category");
+  const subCategoryQuery = searchParams.get("subcategory");
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 100, damping: 15 },
+    },
+  };
 
   // Loading spinner component
   const LoadingSpinner = () => (
@@ -197,14 +286,6 @@ export default function ProductPage() {
     }
   };
 
-  const toggleCategory = (category) => {
-    if (activeCategory === category) {
-      setActiveCategory(null);
-    } else {
-      setActiveCategory(category);
-    }
-  };
-
   return (
     <DefaultLayout>
       <div className="bg-gray-50 min-h-screen">
@@ -219,18 +300,31 @@ export default function ProductPage() {
               latestProducts={latestProducts}
               mobileFiltersOpen={mobileFiltersOpen}
               setMobileFiltersOpen={setMobileFiltersOpen}
+              handleCategoryToggle={handleCategoryToggle}
+              handleSubCategoryToggle={handleSubCategoryToggle}
+              categoryQuery={categoryQuery}
+              subCategoryQuery={subCategoryQuery}
             />
 
             {/* Main Content */}
             <div className="w-full lg:w-3/4">
               {isLoading ? (
                 <LoadingSpinner />
+              ) : isFilterLoading ? (
+                <LoadingSpinner />
               ) : !product ? (
                 <NoItemsFound />
               ) : (
-                <>
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                >
                   {/* Product Overview */}
-                  <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+                  <motion.div
+                    variants={itemVariants}
+                    className="bg-white rounded-lg shadow-sm p-6 mb-6"
+                  >
                     <div className="flex flex-col md:flex-row gap-8">
                       {/* Product Images */}
                       <div className="w-full md:w-1/2">
@@ -346,6 +440,12 @@ export default function ProductPage() {
                                     <Link
                                       to={`/products?category=${product.categories[0].name}`}
                                       className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800 cursor-pointer"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleCategoryToggle(
+                                          product.categories[0].name
+                                        );
+                                      }}
                                     >
                                       {product.categories[0].name}
                                     </Link>
@@ -362,6 +462,32 @@ export default function ProductPage() {
                                       <Link
                                         to={`/products?category=${product.categories[0].name}&subcategory=${product.categories[0].subcategories[0].name}`}
                                         className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800 cursor-pointer"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          // First ensure category is set
+                                          if (
+                                            categoryQuery !==
+                                            product.categories[0].name
+                                          ) {
+                                            const newParams =
+                                              new URLSearchParams(searchParams);
+                                            newParams.set(
+                                              "category",
+                                              product.categories[0].name
+                                            );
+                                            newParams.set(
+                                              "subcategory",
+                                              product.categories[0]
+                                                .subcategories[0].name
+                                            );
+                                            setSearchParams(newParams);
+                                          } else {
+                                            handleSubCategoryToggle(
+                                              product.categories[0]
+                                                .subcategories[0].name
+                                            );
+                                          }
+                                        }}
                                       >
                                         {
                                           product.categories[0].subcategories[0]
@@ -407,10 +533,13 @@ export default function ProductPage() {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Product Details Tabs */}
-                  <div className="bg-white rounded-lg shadow-sm mb-6 overflow-hidden">
+                  <motion.div
+                    variants={itemVariants}
+                    className="bg-white rounded-lg shadow-sm mb-6 overflow-hidden"
+                  >
                     <TabGroup>
                       <TabList className="flex border-b">
                         <Tab
@@ -598,10 +727,13 @@ export default function ProductPage() {
                           )}
                       </TabPanels>
                     </TabGroup>
-                  </div>
+                  </motion.div>
 
                   {product.videoUrl && (
-                    <div className="mt-8 bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <motion.div
+                      variants={itemVariants}
+                      className="mt-8 bg-white rounded-lg shadow-sm p-6 mb-6"
+                    >
                       <h3 className="text-xl font-semibold mb-6 text-gray-900">
                         Product Video
                       </h3>
@@ -614,11 +746,12 @@ export default function ProductPage() {
                           allowFullScreen
                         ></iframe>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
                   {/* Inquiry Form */}
-                  <div
+                  <motion.div
+                    variants={itemVariants}
                     id="inquiry-form"
                     className="bg-white rounded-lg shadow-sm p-6 mb-6"
                   >
@@ -752,7 +885,7 @@ export default function ProductPage() {
                         </button>
                       </form>
                     )}
-                  </div>
+                  </motion.div>
 
                   {/* Related Products */}
                   {relatedProducts.length > 0 && (
@@ -782,7 +915,7 @@ export default function ProductPage() {
                       </div>
                     </div>
                   )}
-                </>
+                </motion.div>
               )}
             </div>
           </div>
