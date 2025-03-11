@@ -27,6 +27,8 @@ const SearchComponent = ({
             newParams.set("category", prevParams.get("category"));
           if (prevParams.has("subcategory"))
             newParams.set("subcategory", prevParams.get("subcategory"));
+          if (prevParams.has("page"))
+            newParams.set("page", prevParams.get("page"));
           return newParams;
         });
       }
