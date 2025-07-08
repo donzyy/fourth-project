@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import Data from "../data";
+import { useEffect, useState } from "react";
 
 function CategoriesSection() {
   const containerVariants = {
@@ -36,6 +38,23 @@ function CategoriesSection() {
     transition: { type: "spring", stiffness: 400 },
   };
 
+  const [products, setProducts] = useState(Data.products);
+
+  useEffect(() => {
+    const randomisedProducts = (productsArr) => {
+      for (let i = productsArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [productsArr[i], productsArr[j]] = [productsArr[j], productsArr[i]];
+      }
+
+      return productsArr;
+    };
+
+    const randProducts = randomisedProducts(products);
+
+    setProducts(randProducts.slice(0, 3));
+  }, []);
+
   return (
     <section className="py-24 bg-gradient-to-b from-white to-gray-50 overflow-x-hidden">
       <div className="container mx-auto px-4">
@@ -59,17 +78,12 @@ function CategoriesSection() {
               variants={itemVariants}
               whileHover={{ y: -5 }}
               className="relative mb-6 h-64 w-full bg-cover bg-center bg-no-repeat rounded-xl object-cover shadow-lg overflow-hidden"
-              style={{ backgroundImage: 'url("/Media/TestImage1.jpg")' }}
+              style={{ backgroundImage: `url(${products[0].image})` }}
             >
-              <motion.span
-                variants={badgeVariants}
-                initial="initial"
-                animate="animate"
-                className="inline-block mt-4 ml-4 px-3 py-1 text-xs font-semibold border-2 border-red-500 rounded-full text-red-500 bg-white shadow-sm"
+              <Link
+                className="absolute inset-0 flex items-end"
+                to={`/product/${products[0].slug}`}
               >
-                -10% OFF
-              </motion.span>
-              <Link className="absolute inset-0 flex items-end" to="#">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -77,12 +91,12 @@ function CategoriesSection() {
                   className="pl-8 pb-8 w-full bg-gradient-to-t from-black/70 to-transparent"
                 >
                   <h3 className="text-3xl font-bold text-white">
-                    LIFE Bottle 2.0
+                    {products[0].name}
                   </h3>
                   <p className="text-xl text-white font-bold">
-                    <span>$10.30</span>
-                    <span className="text-sm font-normal line-through ml-2 opacity-70">
-                      $11.99
+                    <span>
+                      {products[0].categories[0].name} |{" "}
+                      {products[0].categories[0].subcategories[0].name}
                     </span>
                   </p>
                 </motion.div>
@@ -93,17 +107,12 @@ function CategoriesSection() {
               variants={itemVariants}
               whileHover={{ y: -5 }}
               className="relative h-64 w-full bg-cover bg-center bg-no-repeat rounded-xl object-cover shadow-lg overflow-hidden"
-              style={{ backgroundImage: 'url("/Media/TestImage2.jpg")' }}
+              style={{ backgroundImage: `url(${products[1].image})` }}
             >
-              <motion.span
-                variants={badgeVariants}
-                initial="initial"
-                animate="animate"
-                className="inline-block mt-4 ml-4 px-3 py-1 text-xs font-semibold border-2 border-red-500 rounded-full text-red-500 bg-white shadow-sm"
+              <Link
+                className="absolute inset-0 flex items-end"
+                to={`/product/${products[1].slug}`}
               >
-                -10% OFF
-              </motion.span>
-              <Link className="absolute inset-0 flex items-end" to="#">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -111,12 +120,12 @@ function CategoriesSection() {
                   className="pl-8 pb-8 w-full bg-gradient-to-t from-black/70 to-transparent"
                 >
                   <h3 className="text-3xl font-bold text-white">
-                    Tennis racket Sanks 2
+                    {products[1].name}
                   </h3>
                   <p className="text-xl text-white font-bold">
-                    <span>$126.90</span>
-                    <span className="text-sm font-normal line-through ml-2 opacity-70">
-                      $139.90
+                    <span>
+                      {products[1].categories[0].name} |{" "}
+                      {products[1].categories[0].subcategories[0].name}
                     </span>
                   </p>
                 </motion.div>
@@ -129,7 +138,7 @@ function CategoriesSection() {
               variants={itemVariants}
               whileHover={{ y: -5 }}
               className="relative inline-block mb-6 h-96 lg:h-full w-full bg-no-repeat bg-cover rounded-xl object-cover shadow-lg overflow-hidden"
-              style={{ backgroundImage: 'url("/Media/TestImage.jpg")' }}
+              style={{ backgroundImage: `url(${products[2].image})` }}
             >
               <motion.span
                 variants={badgeVariants}
@@ -146,7 +155,7 @@ function CategoriesSection() {
                   transition={{ delay: 0.4 }}
                   className="text-xl text-amber-400 font-semibold"
                 >
-                  Excellent value bike
+                  Excellent Value
                 </motion.span>
                 <motion.h3
                   initial={{ opacity: 0, x: -20 }}
@@ -154,7 +163,7 @@ function CategoriesSection() {
                   transition={{ delay: 0.5 }}
                   className="mt-3 mb-2 text-3xl font-bold text-white"
                 >
-                  Brooklyn Sain 1
+                  {products[2].name}
                 </motion.h3>
                 <motion.p
                   initial={{ opacity: 0, x: -20 }}
@@ -162,14 +171,15 @@ function CategoriesSection() {
                   transition={{ delay: 0.6 }}
                   className="mb-8 font-bold text-white"
                 >
-                  $379.90
+                  {products[2].categories[0].name} |{" "}
+                  {products[2].categories[0].subcategories[0].name}
                 </motion.p>
                 <motion.div whileHover={buttonHover} whileTap={{ scale: 0.95 }}>
                   <Link
                     className="inline-block bg-gradient-to-r from-amber-400 to-amber-500 text-white font-semibold py-3 px-8 rounded-full uppercase transition-all shadow-md hover:shadow-lg"
-                    to={""}
+                    to="/quote"
                   >
-                    Buy Now
+                    Get a Quote
                   </Link>
                 </motion.div>
               </div>
@@ -190,7 +200,7 @@ function CategoriesSection() {
           >
             <Link
               className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-semibold py-4 px-10 rounded-full uppercase shadow-md hover:shadow-lg transition-all"
-              to={""}
+              to="/products"
             >
               View All Products
             </Link>
